@@ -1,0 +1,456 @@
+#include "renderer/Win32Font.h"
+#include "utils/debug/imdebug.h"
+#include <sstream>
+
+#include "renderer/VertexBuffer2D.h"
+#include "renderer/Pixel.h"
+
+using namespace Niski::Renderer;
+
+const std::wstring Win32Font::ansiPreload = L"?!@#$%^&*()-_=+[{]}\\|'\";:/.>,<`~ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+Win32Font::Win32Font(const std::wstring& fontFace, uint32_t size, uint32_t flags) 
+	: dc_(NULL), font_(NULL), bitmap_(NULL), bits_(NULL), fontFace_(fontFace), fontSize_(size), flags_(flags)
+{
+	int weight = (flags & Styles::Bold) ? FW_BOLD : FW_NORMAL;
+	bool italics = (flags & Styles::Italics) ? true : false;
+	bool underline = (flags & Styles::Underline) ? true : false;
+	bool strikeout = (flags & Styles::Strikeout) ? true : false;
+
+	//
+	// initialize GDI stuff.
+	dc_ = ::CreateCompatibleDC(NULL);
+
+	if(dc_ == NULL)
+	{
+		std::ostringstream err("Failed to create DC. \nWindows API returned error code: ");
+		err << ::GetLastError();
+		throw FailedToInitializeFont(err.str());
+	}
+
+	//
+	// Make the height negative because the size we get is not in device units
+	int32_t height = -(::MulDiv(size, ::GetDeviceCaps(dc_, LOGPIXELSY), 72));
+
+	font_ = ::CreateFont(height, 0, 0, 0, weight, italics, underline, strikeout, 
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, 
+		DEFAULT_PITCH | FF_DONTCARE, fontFace.c_str());
+
+	if(font_ == NULL)
+	{
+		std::ostringstream err("Failed to create font. \nWindows API returned error code: ");
+		err << ::GetLastError();
+		throw FailedToInitializeFont(err.str());
+	}
+
+	::SetMapMode(dc_, MM_TEXT);
+	::SelectObject(dc_, font_);
+	::SetTextAlign(dc_, TA_LEFT | TA_TOP | TA_UPDATECP);
+
+	TEXTMETRIC tm;
+	::ZeroMemory(&tm, sizeof(tm));
+	if(GetTextMetrics(dc_, &tm) == FALSE)
+	{
+		std::ostringstream err("Failed to get metrics for font. \nWindows API returned error code: ");
+		err << ::GetLastError();
+		throw FailedToInitializeFont(err.str());
+	}
+
+	fontHeight_ = tm.tmHeight + tm.tmExternalLeading + 1;
+	ascent_ = tm.tmAscent;
+
+	//
+	// Determine the size of our bitmap. 
+	glyphSize_ = Niski::Math::roundUpToPowerOfTwo(max(fontHeight_, tm.tmMaxCharWidth));
+	glyphSize_ = max(glyphSize_, 32);
+
+	BITMAPINFO bitMapInfo;
+	::ZeroMemory(&bitMapInfo, sizeof(bitMapInfo));
+	bitMapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bitMapInfo.bmiHeader.biWidth = glyphSize_;
+	bitMapInfo.bmiHeader.biHeight = (glyphSize_) * -1;
+	bitMapInfo.bmiHeader.biPlanes = 1;
+	bitMapInfo.bmiHeader.biBitCount = 32;
+	bitMapInfo.bmiHeader.biCompression = BI_RGB;
+
+	bitmap_ = ::CreateDIBSection(dc_, &bitMapInfo, DIB_RGB_COLORS, (void**)&bits_, NULL, 0);
+
+	if(bitmap_ == NULL)
+	{
+		std::ostringstream err("Failed to create a DIB for font rendering. \nWindows API returned error code: ");
+		err << ::GetLastError();
+		throw FailedToInitializeFont(err.str());
+	}
+
+	::SelectObject(dc_, bitmap_);
+	::SetBkColor(dc_, RGB(0, 0, 0));
+	::SetTextColor(dc_, RGB(255, 255, 255));
+}
+
+Win32Font::~Win32Font(void)
+{
+	if(dc_)
+	{
+		::DeleteDC(dc_);
+	}
+
+	if(font_)
+	{
+		::DeleteObject(font_);
+	}
+
+	if(bitmap_)
+	{
+		::DeleteObject(bitmap_);
+	}
+
+	//
+	// Release all of our sheets
+	if(glyphSheets_.size() > 0)
+	{
+		for(auto glyph : glyphSheets_)
+		{
+			if(glyph.texture)
+			{
+				glyph.texture->destroy();
+			}
+		}
+	}
+}
+
+bool Win32Font::preloadGlyphs(const std::wstring& glyphs, Niski::Renderer::Renderer& renderer)
+{
+	bool ret = true;
+
+	Texture* lockedSheet = NULL;
+	uint32_t* textureBits = NULL;
+	uint32_t pitch = 0;
+	size_t sheetIndex = 0;	
+	HBRUSH brush = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	D3DLOCKED_RECT lockedRect;
+	::ZeroMemory(&lockedRect, sizeof(lockedRect));
+
+	//
+	// Set our font to render to the dib
+	::SelectObject(dc_, font_);
+
+	for(size_t i = 0; i < glyphs.length(); ++i)
+	{
+		wchar_t ch = glyphs[i];
+
+		if(iswspace(ch))
+		{
+			continue;
+		}
+		else if(glyphs_[ch].isValid)
+		{
+			continue;
+		}
+
+		//
+		// Have the bitmap be written to from the top left.
+		::MoveToEx(dc_, 0, 0, NULL);
+
+		//
+		// Draw this glyph onto the DC
+		RECT rect = {0, 0, glyphSize_, glyphSize_};
+		::FillRect(dc_, &rect, brush);
+		
+		if(::DrawText(dc_, &ch, 1, &rect, DT_LEFT | DT_TOP | DT_SINGLELINE) == 0)
+		{
+			std::ostringstream err("Failed to DrawText to the bitmap. \nWindows API returned error code: ");
+			err << ::GetLastError();
+			// 
+			// TODO: Throw an exception?
+
+			ret = false;
+
+			break;
+		}
+
+		GLYPHMETRICS glyphMetrics;
+		MAT2 mat;
+		::ZeroMemory(&mat, sizeof(mat));
+		mat.eM11.value = 1;
+		mat.eM22.value = 1;
+
+		if(::GetGlyphOutline(dc_, ch, GGO_METRICS, &glyphMetrics, 0, NULL, &mat) == GDI_ERROR)
+		{
+			SIZE sizeGlyph;
+
+			if(::GetTextExtentPoint32(dc_, &ch, 1, &sizeGlyph) == 0)
+			{
+				std::ostringstream err("Failed to obtain text information. \nWindows API returned error code: ");
+				err << ::GetLastError();
+
+				ret = false;
+
+				break;
+			}
+
+			::ZeroMemory(&glyphMetrics, sizeof(glyphMetrics));
+			glyphMetrics.gmBlackBoxX = sizeGlyph.cx;
+			glyphMetrics.gmBlackBoxY = sizeGlyph.cy;
+			glyphMetrics.gmptGlyphOrigin.x = 0;
+			glyphMetrics.gmptGlyphOrigin.y = ascent_;
+			glyphMetrics.gmCellIncX = (short)sizeGlyph.cx;
+		}
+
+		//
+		// Find a sheet with empty space for our glyph. 
+		GlyphSheet* sheet = NULL;
+		for(size_t i = 0; i < glyphSheets_.size(); ++i)
+		{
+			GlyphSheet& currentSheet = glyphSheets_[i];
+
+			if(currentSheet.position.x + glyphMetrics.gmBlackBoxX <= 256)
+			{
+				if(currentSheet.position.y + glyphMetrics.gmBlackBoxY <= 256)
+				{
+					sheetIndex = i;
+					sheet = &currentSheet;
+
+					break;
+				}
+			}
+			else
+			{
+				if(currentSheet.nextY + glyphMetrics.gmBlackBoxY <= 256)
+				{
+					currentSheet.position.x = 0;
+					currentSheet.position.y = currentSheet.nextY;
+					sheet = &currentSheet;
+					sheetIndex = i;
+
+					break;
+				}
+			}
+		}
+
+		if(sheet == NULL)
+		{
+			GlyphSheet newSheet;
+			
+			newSheet.texture = new Texture(renderer, Niski::Math::Vector2D<uint32_t>(256, 256), Niski::Renderer::Texture::A8R8G8B8);
+
+			if(lockedSheet)
+			{
+				lockedSheet->unlockRectangle();
+			}
+
+			lockedSheet = NULL;
+
+			newSheet.nextY = 0;
+
+			sheetIndex = glyphSheets_.size();
+			glyphSheets_.push_back(newSheet);
+			sheet = &glyphSheets_.back();
+		}
+
+		if(lockedSheet != sheet->texture)
+		{
+			if(lockedSheet)
+			{
+				lockedSheet->unlockRectangle();
+			}
+
+			sheet->texture->lockRectangle(Niski::Math::Rect2D(-1, -1, -1, -1), &textureBits, pitch);
+		
+			lockedSheet = sheet->texture;
+		}
+
+		Niski::Math::Vector2D<uint32_t> offset(sheet->position);
+		sheet->position.x += glyphMetrics.gmBlackBoxX + 5;
+
+		//
+		// If this character is taller than previous ones, then update nextY
+		if(glyphMetrics.gmBlackBoxY > sheet->nextY - sheet->position.y)
+		{
+			sheet->nextY = sheet->position.y + glyphMetrics.gmBlackBoxY;
+		}
+
+		//
+		// Need to make sure everything is written to the bitmap
+		// before reading
+		::GdiFlush();
+
+		uint32_t* dwordBits = textureBits + (offset.y * (pitch / 4)) + (offset.x);
+
+		//
+		// Copy bitmap to the texture..
+		int yMax = ascent_ - glyphMetrics.gmptGlyphOrigin.y + glyphMetrics.gmBlackBoxY;
+		int xMax = glyphMetrics.gmptGlyphOrigin.x + glyphMetrics.gmBlackBoxX;
+		for(int y = ascent_ - glyphMetrics.gmptGlyphOrigin.y; y < yMax; ++y)
+		{
+			for(int x = 0; x < xMax; x++)
+			{
+				//
+				// 
+#if 0
+				uint32_t val; 
+				val = (bits_[y * glyphSize_ + x] & 0xFF) << 16;
+				val |= (bits_[(y * glyphSize_ + x) + 1] & 0xFF) << 8;
+				val |= (bits_[(y * glyphSize_ + x) + 2] & 0xFF) << 0;
+				val |= (bits_[(y * glyphSize_ + x) + 3] & 0xFF) << 24;
+
+				*dwordBits++ = val;
+#endif
+
+				//
+				// If the pixel has a color (aka isn't black) then write it to our texture
+				// otherwise, just put a transparent pixel
+				if(bits_[y * glyphSize_ + x])
+				{
+					*dwordBits++ = 0xFF000000;
+				}
+				else
+				{
+					*dwordBits++ = 0x00000000;
+				}
+			}
+
+			//
+			// Pitch is the number of bytes in a row, so we divide it by
+			// 4 (because our texture is 32bits per pixel 32 / 8 = 4)..
+			dwordBits += (pitch / 4) - xMax;
+		}
+
+		glyphs_[ch].sheetIndex = sheetIndex;
+		glyphs_[ch].isValid = true;
+		glyphs_[ch].rectGlyph.left = (int) offset.x;
+		glyphs_[ch].rectGlyph.top = (int) offset.y;
+		glyphs_[ch].rectGlyph.right = glyphMetrics.gmptGlyphOrigin.x + glyphMetrics.gmBlackBoxX;
+		glyphs_[ch].rectGlyph.bottom = glyphMetrics.gmBlackBoxY;
+		glyphs_[ch].origin = Niski::Math::Vector2D<int32_t>(glyphMetrics.gmptGlyphOrigin.x, glyphMetrics.gmptGlyphOrigin.y);
+		glyphs_[ch].width = glyphMetrics.gmCellIncX;
+	}
+
+	if(lockedSheet)
+	{
+		lockedSheet->unlockRectangle();
+	}
+
+	return ret;
+}
+
+Niski::Math::Vector2D<int32_t> Win32Font::measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::wstring& text)
+{
+	Niski::Math::Vector2D<int32_t> size(0, fontHeight_);
+
+	for(size_t i = 0; i < text.length(); ++i)
+	{
+		wchar_t ch = text[i];
+
+		if(ch == '\n')
+		{
+			size.y += fontHeight_;
+		}
+		else if(glyphs_[ch].isValid)
+		{
+			size.x += glyphs_[ch].width;
+		}
+	}
+
+	return size;
+}
+
+void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::Rect2D& renderRect, const std::wstring& text, const Niski::Utils::Color& color) const
+{
+	//
+	// TODO: fix support for letters that go below the line, typically. 
+	// Perhaps measure the text instead of using glyph size? 
+	size_t currentSheet = -1;
+	Niski::Math::Vector2D<int32_t> position(renderRect.left, renderRect.top + fontHeight_);
+
+	for(size_t i = 0; i < text.length(); ++i)
+	{
+		wchar_t ch = text[i];
+		Glyph glyph = glyphs_[ch];
+
+		//
+		// Check if we have room for this character
+		// TODO: Support for word breaks rather than character breaks..
+		if(position.x + glyph.width > renderRect.left + renderRect.right)
+		{
+			//
+			// Check if we have room for another line..
+			if(position.y + fontHeight_ > renderRect.top + renderRect.bottom)
+			{
+				//
+				// No room left.. just quit drawing. 
+				break;
+			}
+			else
+			{
+				position.y += fontHeight_;
+				position.x = renderRect.left;
+			}
+		}
+
+		//
+		// Special check for new lines
+		if(ch == '\n')
+		{
+			// Check if we have room for a new line
+			if(position.y + fontHeight_ > renderRect.top + renderRect.bottom)
+			{
+				//
+				// No room left... abort drawing the rest. 
+				break;
+			}
+			else
+			{
+				position.y += fontHeight_;
+				position.x = renderRect.left;
+			}
+		}
+
+		//
+		// Draw the character if it needs it. 
+		if(glyph.isValid)
+		{
+			Niski::Math::Rect2D rect(glyph.rectGlyph);
+			Niski::Math::Rect2D glyphRect;
+			Niski::Renderer::VertexBuffer2D vBuffer;
+			vBuffer.setColor(color);
+
+			// 
+			// The top of the rectangle should be the height of the character from the bottom.
+			glyphRect.top = position.y - glyph.origin.y;
+			glyphRect.bottom = rect.bottom;
+			glyphRect.left = position.x;
+			glyphRect.right = rect.right;
+
+			vBuffer.pushTexturedRectangle(glyphRect, rect.left / 256.0f, rect.top / 256.0f, (rect.left + rect.right) / 256.0f, (rect.top + rect.bottom) / 256.0f);
+
+			{
+				renderer.getNativeRenderer()->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+				renderer.getNativeRenderer()->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+
+				if(currentSheet != glyph.sheetIndex)
+				{
+					currentSheet = glyph.sheetIndex;
+					glyphSheets_[currentSheet].texture->render(renderer);
+				}
+				
+				renderer.getNativeRenderer()->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+				renderer.getNativeRenderer()->DrawPrimitiveUP(D3DPT_TRIANGLELIST, vBuffer.numVertices() / 3, vBuffer.getFirstVertex(), sizeof(Niski::Renderer::VertexBuffer2D::VertexFormat2D));
+			}
+
+			vBuffer.flushVertices();
+		}
+
+		//
+		// Update the current position
+		// TODO: kind of icky. 
+		if(ch != '\n')
+		{
+			position.x += glyph.width;
+		}
+	}
+
+	//
+	// Set the texture to NULL for other things to render..
+	// TODO: fix when texture system is up. 
+	renderer.getNativeRenderer()->SetTexture(0, NULL);
+}

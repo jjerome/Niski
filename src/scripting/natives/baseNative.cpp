@@ -1,0 +1,4 @@
+class BaseNative
+{
+	void run()
+};

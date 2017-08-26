@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ED33B65B-F73C-48A1-B908-A58D6573DFC5}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Niski</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(ProjectDir)\..\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)\..\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)-$(Configuration)</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\include;$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)-$(Configuration)</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(LibraryPath)</LibraryPath>
+    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)-$(Configuration)</TargetName>
+    <IncludePath>$(ProjectDir)\..\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\..\lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(ProjectName)-$(Configuration)</TargetName>
+    <IncludePath>D:\Code\Niski\Niski\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x64;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\tmp\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENABLE_DIRECTX;D3D_DEBUG_INFO;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d9.lib;dxerr.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ENABLE_DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;ENABLE_DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;ENABLE_DIRECTX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\engine\ConCommand.h" />
+    <ClInclude Include="..\include\engine\ConVar.h" />
+    <ClInclude Include="..\include\engine\Entity.h" />
+    <ClInclude Include="..\include\engine\KeyBindings.h" />
+    <ClInclude Include="..\include\engine\Player.h" />
+    <ClInclude Include="..\include\engine\World.h" />
+    <ClInclude Include="..\include\gui\Base.h" />
+    <ClInclude Include="..\include\gui\Event.h" />
+    <ClInclude Include="..\include\gui\TextInput.h" />
+    <ClInclude Include="..\include\gui\Label.h" />
+    <ClInclude Include="..\include\gui\RootPanel.h" />
+    <ClInclude Include="..\include\input\InputListener.h" />
+    <ClInclude Include="..\include\input\InputSystem.h" />
+    <ClInclude Include="..\include\input\KeyCodes.h" />
+    <ClInclude Include="..\include\input\InputEvent.h" />
+    <ClInclude Include="..\include\input\KeyCodeToString.h" />
+    <ClInclude Include="..\include\input\MouseEvent.h" />
+    <ClInclude Include="..\include\input\MouseListener.h" />
+    <ClInclude Include="..\include\input\Win32Translator.h" />
+    <ClInclude Include="..\include\math\Math.h" />
+    <ClInclude Include="..\include\math\Random.h" />
+    <ClInclude Include="..\include\math\Rectangle.h" />
+    <ClInclude Include="..\include\math\Vec2d.h" />
+    <ClInclude Include="..\include\physics\Body.h" />
+    <ClInclude Include="..\include\pong_game\Ball.h" />
+    <ClInclude Include="..\include\pong_game\GameRules.h" />
+    <ClInclude Include="..\include\pong_game\Paddle.h" />
+    <ClInclude Include="..\include\pong_game\PongPlayer.h" />
+    <ClInclude Include="..\include\pong_game\PongWorld.h" />
+    <ClInclude Include="..\include\renderer\Pixel.h" />
+    <ClInclude Include="..\include\renderer\Renderer.h" />
+    <ClInclude Include="..\include\renderer\RenderWindow.h" />
+    <ClInclude Include="..\include\renderer\Texture.h" />
+    <ClInclude Include="..\include\renderer\VertexBuffer2D.h" />
+    <ClInclude Include="..\include\renderer\Win32Font.h" />
+    <ClInclude Include="..\include\targetver.h" />
+    <ClInclude Include="..\include\utils\Assert.h" />
+    <ClInclude Include="..\include\utils\Color.h" />
+    <ClInclude Include="..\include\utils\win32\Win32Includes.h" />
+    <ClInclude Include="..\include\utils\WritableDirectory.h" />
+    <ClInclude Include="..\include\utils\Debug.h" />
+    <ClInclude Include="..\include\utils\Helpers.h" />
+    <ClInclude Include="..\include\utils\Log.h" />
+    <ClInclude Include="..\include\utils\StringUtils.h" />
+    <ClInclude Include="..\include\utils\TGA.h" />
+    <ClInclude Include="..\include\utils\Timer.h" />
+    <ClInclude Include="..\include\utils\win32\AssertCallBack.h" />
+    <ClInclude Include="..\include\utils\win32\AutoHandle.h" />
+    <ClInclude Include="..\include\utils\win32\System.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\engine\ConCommand.cpp" />
+    <ClCompile Include="..\src\engine\ConVar.cpp" />
+    <ClCompile Include="..\src\engine\Entity.cpp" />
+    <ClCompile Include="..\src\engine\KeyBindings.cpp" />
+    <ClCompile Include="..\src\engine\Player.cpp" />
+    <ClCompile Include="..\src\engine\World.cpp" />
+    <ClCompile Include="..\src\gui\Base.cpp" />
+    <ClCompile Include="..\src\gui\Label.cpp" />
+    <ClCompile Include="..\src\gui\LineGraph.cpp" />
+    <ClCompile Include="..\src\gui\MouseListener.cpp" />
+    <ClCompile Include="..\src\gui\RootPanel.cpp" />
+    <ClCompile Include="..\src\gui\TextInput.cpp" />
+    <ClCompile Include="..\src\gui\TitleBar.cpp" />
+    <ClCompile Include="..\src\input\InputEvent.cpp" />
+    <ClCompile Include="..\src\input\InputSystem.cpp" />
+    <ClCompile Include="..\src\input\KeyCodeToString.cpp" />
+    <ClCompile Include="..\src\input\Win32Translator.cpp" />
+    <ClCompile Include="..\src\pong_game\Ball.cpp" />
+    <ClCompile Include="..\src\pong_game\GameRules.cpp" />
+    <ClCompile Include="..\src\pong_game\Paddle.cpp" />
+    <ClCompile Include="..\src\pong_game\PongPlayer.cpp" />
+    <ClCompile Include="..\src\pong_game\PongWorld.cpp" />
+    <ClCompile Include="..\src\renderer\Color.cpp" />
+    <ClCompile Include="..\src\renderer\Pixel.cpp" />
+    <ClCompile Include="..\src\renderer\Renderer.cpp" />
+    <ClCompile Include="..\src\renderer\RenderWindow.cpp" />
+    <ClCompile Include="..\src\renderer\Texture.cpp" />
+    <ClCompile Include="..\src\renderer\VertexBuffer2D.cpp" />
+    <ClCompile Include="..\src\renderer\Win32Font.cpp" />
+    <ClCompile Include="..\src\utils\Assert.cpp" />
+    <ClCompile Include="..\src\utils\Log.cpp" />
+    <ClCompile Include="..\src\utils\StringUtils.cpp" />
+    <ClCompile Include="..\src\utils\TGA.cpp" />
+    <ClCompile Include="..\src\utils\Timer.cpp" />
+    <ClCompile Include="..\src\utils\win32\AssertCallBack.cpp" />
+    <ClCompile Include="..\src\utils\win32\System.cpp" />
+    <ClCompile Include="..\src\utils\WritableDirectory.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

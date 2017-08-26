@@ -1,0 +1,114 @@
+#include "utils/DataDirectory.h"
+
+using namespace Niski::Utils;
+
+//
+// Initialize our static variable.
+// Not sure if having this as a static variable is good karma. 
+DataDirectory* DataDirectory::dir = nullptr;
+
+
+DataDirectory::DataDirectory(const std::wstring& gameName) : gameName_(gameName)
+{
+	//
+	// initialize our member.
+	::ZeroMemory(path_, MAX_PATH * sizeof(wchar_t));
+
+	HRESULT result = ::SHGetFolderPath(nullptr, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path_);
+
+	//
+	// TODO: More descriptive error text (GetLastError)
+	Niski::Utils::Assert(result == S_OK, "Failed to get folder path to user's documents folder", __FILE__, __FUNCSIG__, __LINE__);
+
+	//
+	// Check if the "My Games" path exists, if not, create it
+	::PathAppend(path_, TEXT("My Games"));
+
+	if(pathExists(path_, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
+	{
+		//
+		// TODO: More descriptive error text.. 
+		Niski::Utils::Assert(false, "\"My Games\" directory does not exist and we failed to create one", __FILE__, __FUNCSIG__, __LINE__);
+	}
+
+	//
+	// Now check if %user%\documents\my games\<game name> exists and create it, if it doesn't
+	::PathAppend(path_, gameName_.data());
+
+	if(pathExists(path_, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
+	{
+		//
+		// TODO: More descriptive error text
+		std::ostringstream err;
+		err << "Failed to create path: " << path_;
+		Niski::Utils::Assert(false, err.str(), __FILE__, __FUNCSIG__, __LINE__);
+	}
+
+}
+
+DataDirectory::~DataDirectory(void)
+{}
+
+const std::wstring DataDirectory::getPath(const std::wstring& folderName) const
+{
+	TCHAR tempPath[MAX_PATH];
+	_tcscpy_s(tempPath, MAX_PATH, path_);
+
+	::PathAppend(tempPath, folderName.data());
+
+	if(pathExists(tempPath, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
+	{
+		//
+		// TODO: More descriptive error text..
+		// This should also be an exception provided we know it's not a fuck up
+		// on our end (e.g. path_ wasn't valid to begin with)
+		Niski::Utils::Assert(false, "Failed to create path", __FILE__, __FUNCSIG__, __LINE__);
+
+		return L"INVALID_PATH";
+	}
+
+	return std::wstring(tempPath);
+}
+
+DataDirectory::pathExistsResponse DataDirectory::pathExists(const std::wstring& path, pathExistsAction action /* = create */) const
+{
+	//
+	// Check if a path exists. It's possible for PathFileExists to lie, initially.
+	// So we attempt it twice, with a period of 1ms in between to verify. (It only lies
+	// that it doesn't exist, so if it reports that it does exist initially, we can skip 
+	// the second attempt)
+
+	int8_t tries = 1;
+	BOOL result;
+
+	do 
+	{
+		result = ::PathFileExists(path.data());
+		
+		if(result == TRUE)
+		{
+			break;
+		}
+
+		::Sleep(1);
+	} while (tries > 0 && tries--);
+
+	if(result == FALSE)
+	{
+		//
+		// Attempt to create it, if we're allowed. 
+		if(action == pathExistsAction::create)
+		{
+			if(_wmkdir(path.data()) == -1)
+			{
+				return pathExistsResponse::pathDoesNotExist_FailedToCreate;
+			}
+		}
+		else
+		{
+			return pathExistsResponse::pathDoesNotExist;
+		}
+	}
+
+	return pathExistsResponse::pathDoesExist;
+}
