@@ -31,7 +31,16 @@
 *.out
 *.app
 
+#Visual Studio junk
+*.suo
+*.sdf
+*.VC.db
+*.vsp
+
+/.vs/
 /bin/
 /deps/
+#Don't include SDL. They should grab it themselves.
+/include/SDL/
 /lib/
 /tmp/

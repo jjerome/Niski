@@ -61,9 +61,58 @@ const std::string KeyBindings::getBinding(Niski::Input::KeyCodes key)
 	}
 }
 
+Niski::Input::InputListener::inputEventResponse KeyBindings::receiveMouseButtonEvent(const Niski::Input::MouseBtnEvent& event)
+{
+
+	if (event.getState() == Niski::Input::KeyState::Pressed)
+	{
+		std::string command = getBinding(event.getButton());
+
+		//
+		// TODO: Temporary?
+		if (command == "INVALID_KEY")
+		{
+			return pass;
+		}
+
+		ConCommand* cmd = ConCommand::getCommand(command);
+
+		if (cmd)
+		{
+			cmd->run();
+		}
+		else
+		{
+			return pass;
+		}
+	}
+
+	if (event.getState() == Niski::Input::KeyState::Released)
+	{
+		std::string command = getBinding(event.getButton());
+
+		//
+		// If the command begins with +
+		// then run the - version of the command. 
+		if (command[0] == '+')
+		{
+			command[0] = '-';
+
+			ConCommand* cmd = ConCommand::getCommand(command);
+
+			if (cmd)
+			{
+				cmd->run();
+			}
+		}
+	}
+
+	return acknowledged;
+}
+
 Niski::Input::InputListener::inputEventResponse KeyBindings::receiveInputEvent(const Niski::Input::InputEvent& inputEvent)
 {
-	if(inputEvent.getKeyState() == Niski::Input::InputEvent::KeyState::Pressed)
+	if(inputEvent.getKeyState() == Niski::Input::KeyState::Pressed)
 	{
 		std::string command = getBinding(inputEvent.getKeyCode());
 
@@ -86,7 +135,7 @@ Niski::Input::InputListener::inputEventResponse KeyBindings::receiveInputEvent(c
 		}
 	}
 
-	if(inputEvent.getKeyState() == Niski::Input::InputEvent::KeyState::Released)
+	if(inputEvent.getKeyState() == Niski::Input::KeyState::Released)
 	{
 		std::string command = getBinding(inputEvent.getKeyCode());
 		

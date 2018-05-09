@@ -66,7 +66,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 	//
 	// We don't care about a key being released - at least at
 	// the moment. 
-	if(event.getKeyState() == Niski::Input::InputEvent::Released)
+	if(event.getKeyState() == Niski::Input::KeyState::Released)
 	{
 		return;
 	}
@@ -83,7 +83,16 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 		break;
 
 	case Niski::Input::KeyCodes::Key_Right:
-		++cursorPos_.x;
+		//
+		// Still room for us to go left. 
+		if (cursorPos_.x < str.length() + 1)
+		{
+			++cursorPos_.x;
+		}
+		else if (cursorPos_.y )
+		{
+			
+		}
 		break;
 
 	case Niski::Input::KeyCodes::Key_Up:
@@ -103,19 +112,24 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 	case Niski::Input::KeyCodes::Key_Enter:
 	case Niski::Input::KeyCodes::Key_Pad_Enter:
 		str.insert(cursorPos_.x, L"\n");
-		++cursorPos_.x;
+
+		//
+		// TODO: Should this perform a submit?
 		break;
 
 	case Niski::Input::KeyCodes::Key_BackSpace:
-		if (!str.empty() && cursorPos_.x != 0)
+		if (!str.empty())
 		{
-			str.erase(cursorPos_.x - 1, 1);
-			--cursorPos_.x;
+			if (cursorPos_.x != 0)
+			{
+				str.erase(cursorPos_.x - 1, 1);
+				--cursorPos_.x;
+			}
 		}
 		break;
 
 	case Niski::Input::KeyCodes::Key_Delete:
-		if (!str.empty())
+		if (!str.empty() && cursorPos_.x != str.length() + 1)
 		{
 			str.erase(cursorPos_.x, 1);
 		}

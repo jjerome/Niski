@@ -2,7 +2,7 @@
 
 using namespace Niski::Input;
 
-InputEvent::InputEvent(KeyCodes key, KeyState state, double stateChanged) : key_(key), state_(state), stateChanged_(stateChanged)
+InputEvent::InputEvent(KeyCodes key, KeyState state, uint32_t when) : key_(key), state_(state), when_(when)
 {}
 
 InputEvent::~InputEvent(void)
@@ -13,12 +13,12 @@ Niski::Input::KeyCodes InputEvent::getKeyCode(void) const
 	return key_;
 }
 
-InputEvent::KeyState InputEvent::getKeyState(void) const
+KeyState InputEvent::getKeyState(void) const
 {
 	return state_;
 }
 
-double InputEvent::getTimeStateChanged(void) const
+uint32_t InputEvent::when(void) const
 {
-	return stateChanged_;
+	return when_;
 }

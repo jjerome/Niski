@@ -99,7 +99,7 @@ void GameLogicThread::run(void)
 
 			if(sleepTime > 0)
 			{
-				::Sleep(sleepTime);
+				SDL_Delay(sleepTime);
 			}
 		}
 	}

@@ -8,9 +8,7 @@
 using namespace Niski::Input;
 
 InputSystem::InputSystem(void) : lastMousePos_(0, 0), charListener_(nullptr)
-{
-	translator_ = new Win32Translator();
-}
+{}
 
 InputSystem::~InputSystem(void)
 {}
@@ -114,6 +112,25 @@ void InputSystem::dispatchMouseEvent(const MouseEvent& event) const
 	}
 }
 
+void InputSystem::dispatchMouseBtnEvent(const MouseBtnEvent& event) const
+{
+	if (inputListeners_.size() > 0)
+	{
+		for (auto listener : inputListeners_)
+		{
+			//
+			// Iterate through all of our listeners (should
+			// already be sorted automatically)
+			// and pass the event along if the listener doesn't
+			// acknowledge the event. 
+			if (listener->receiveMouseButtonEvent(event) == MouseListener::mouseEventResponse::acknowledged)
+			{
+				break;
+			}
+		}
+	}
+}
+
 void InputSystem::setCharListener(CharListener* charListener)
 {
 	charListener_ = charListener;
@@ -127,6 +144,53 @@ void InputSystem::dispatchChar(wchar_t ch)
 	}
 }
 
+void InputSystem::receiveSDLEvent(const SDL_Event& evt)
+{
+	switch (evt.type)
+	{
+	case SDL_KEYDOWN:
+	case SDL_KEYUP:
+	{
+		SDL_KeyboardEvent kbEvent = evt.key;
+		InputEvent inputEvent(ConvertSDLKeyToKeyCode(kbEvent.keysym.sym), (kbEvent.state == SDL_PRESSED) ? KeyState::Pressed : KeyState::Released, kbEvent.timestamp);
+		dispatchInputEvent(inputEvent);
+	}
+	break;
+
+	case SDL_MOUSEBUTTONUP:
+	case SDL_MOUSEBUTTONDOWN:
+	{
+		SDL_MouseButtonEvent mEvent = evt.button;
+		MouseBtnEvent btnEvent(ConvertSDLToMouseButton(mEvent.button), (mEvent.state == SDL_PRESSED) ? KeyState::Pressed : KeyState::Released, mEvent.timestamp);
+		dispatchMouseBtnEvent(btnEvent);
+	}
+	break;
+
+	case SDL_TEXTINPUT:
+	case SDL_TEXTEDITING:
+	{
+		//
+		// TODO: 
+		dispatchChar(wchar_t(evt.text.text));
+	}
+	break;
+
+	case SDL_MOUSEWHEEL:
+	case SDL_MOUSEMOTION:
+	{
+		Niski::Math::Vector2D<int32_t> difference(evt.motion.xrel, evt.motion.yrel);
+		//
+		// TODO: Support evt.wheel.direction 
+		MouseEvent mouseEvent(difference, evt.wheel.y);
+		dispatchMouseEvent(mouseEvent);
+	}
+	break;
+
+	default:
+		break;
+	}
+}
+#if 0
 void InputSystem::run(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	//
@@ -270,3 +334,5 @@ void /* Private */ InputSystem::handleMouseEvent(WPARAM wParam, bool pressed)
 		dispatchInputEvent(InputEvent(KeyCodes::Mouse_Side_Forward, state, 0));
 	}
 }
+
+#endif

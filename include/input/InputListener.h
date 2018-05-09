@@ -50,6 +50,7 @@ namespace Niski
 			InputListener(void) {}
 
 			virtual inputEventResponse receiveInputEvent(const InputEvent& inputEvent) = 0;
+			virtual inputEventResponse receiveMouseButtonEvent(const MouseBtnEvent& event) = 0;
 			virtual inputPriorityPreference getInputPriorityPreference(void) const { return dontCare; }
 		};
 	}

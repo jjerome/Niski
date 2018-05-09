@@ -2,6 +2,9 @@
 #include "utils/Debug.h"
 #include "utils/Helpers.h"
 #include "utils/win32/System.h"
+
+#include "SDL/SDL.h"
+#include "SDL/SDL_syswm.h"
 #include <iostream>
 #include <sstream>
 
@@ -134,7 +137,11 @@ void Renderer::initializeDevice(const RenderWindow& window, uint8_t adapter)
 		vertexProcessing = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 	}
 
-	result = direct3d_->CreateDevice(adapter, D3DDEVTYPE_HAL, window.getNativeHandle(), vertexProcessing | D3DCREATE_MULTITHREADED, &presentParams_, &device_);
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	SDL_GetWindowWMInfo(window.getWndHandle(), &info);
+
+	result = direct3d_->CreateDevice(adapter, D3DDEVTYPE_HAL, info.info.win.window, vertexProcessing | D3DCREATE_MULTITHREADED, &presentParams_, &device_);
 
 	if(FAILED(result))
 	{
@@ -211,9 +218,13 @@ void Renderer::initializePresentParams(const RenderWindow& window, uint8_t adapt
 		throw RendererFailedToInitialize(error.str());
 	}
 
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	SDL_GetWindowWMInfo(window.getWndHandle(), &info);
+
 	presentParams_.Windowed = (displayType == Renderer::windowed);
 	presentParams_.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	presentParams_.hDeviceWindow = window.getNativeHandle();
+	presentParams_.hDeviceWindow = info.info.win.window;
 	presentParams_.BackBufferHeight = backBufferSize.y;
 	presentParams_.BackBufferWidth = backBufferSize.x;
 	presentParams_.BackBufferFormat = backBufferFormat;

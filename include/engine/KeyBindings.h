@@ -54,8 +54,10 @@ namespace Niski
 			KeyBindings(void);
 			~KeyBindings(void);
 
-			void							setBinding(Niski::Input::KeyCodes key, std::string command);
-			const	std::string 			getBinding(Niski::Input::KeyCodes key);
+			void								setBinding(Niski::Input::KeyCodes key, std::string command);
+			const	std::string 				getBinding(Niski::Input::KeyCodes key);
+
+			virtual inputEventResponse			receiveMouseButtonEvent(const Niski::Input::MouseBtnEvent& event);
 
 			virtual inputEventResponse			receiveInputEvent(const Niski::Input::InputEvent& inputEvent);
 

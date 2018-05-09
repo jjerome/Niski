@@ -7,6 +7,8 @@
 #include <thread>
 #include <chrono>
 
+#include "SDL/SDL.h"
+
 #include "gui/RootPanel.h"
 #include "gui/TextInput.h"
 #include "input/InputSystem.h"
@@ -27,7 +29,11 @@
 #include "niski_main/GameLogicThread.h"
 #include "niski_main/RenderThread.h"
 
+#ifndef _WIN32
 int main(int argc, const char* argv[])
+#else
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#endif
 {
 	//
 	// Set up our writable directory for configs / etc. 
@@ -43,6 +49,12 @@ int main(int argc, const char* argv[])
 	QuitCmd quitCmd(&quit);
 	TestCmd testCmd;
 
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	{
+		SDL_Log("Failed to initialize SDL. SDL returned: %s\n", SDL_GetError());
+		return 1;
+	}
+
 	//
 	// Initialize our input system and the key bind system.
 	Niski::Input::InputSystem inputSystem;
@@ -51,8 +63,10 @@ int main(int argc, const char* argv[])
 
 	//
 	// Initialize the render window and the renderer..
-	std::wostringstream winTitle;
+	std::ostringstream winTitle;
+
 	winTitle << "Niski Engine Test" << ((_DEBUG) ? " // DEBUG // " : " \\\\ RETAIL \\\\ ") << "(Build Date: " << __DATE__  << ")";
+
 	Niski::Renderer::RenderWindow win(winTitle.str(), Niski::Math::Rect2D(100, 100, 720, 1280), &inputSystem, Niski::Renderer::RenderWindow::hasBorder);
 	Niski::Renderer::Renderer renderer(win, Niski::Math::Vector2D<int32_t>(1280, 720), Niski::Renderer::Renderer::windowed); //win.getDimensions().right, win.getDimensions().bottom), Niski::Renderer::Renderer::windowed);
 
@@ -113,6 +127,8 @@ int main(int argc, const char* argv[])
 	// Once we reach this, the quit class has told us to quit
 	// and thus the thread should join ours and we exit out.
 	gameLogic.join();
+
+	SDL_Quit();
 
 	return 0;
 }

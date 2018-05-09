@@ -114,14 +114,11 @@ void RenderThreadFunc(shouldQuit& quit, Niski::Renderer::Renderer& renderer, Nis
 			// sleep for expectedFrameTime 
 			DWORD sleepTime = DWORD((expectedFrameTime - frameTime) * 1000); 
 
-			Sleep(sleepTime);
+			SDL_Delay(sleepTime);
 		}
 
-		MSG msg;
-		while(PeekMessage(&msg, win.getNativeHandle(), 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		//
+		// Process input/window events
+		win.pollEvents();
 	}
 }

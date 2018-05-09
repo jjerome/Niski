@@ -5,9 +5,9 @@
 #include "input/CharListener.h"
 #include "input/InputListener.h"
 #include "input/MouseListener.h"
-#include "input/Win32Translator.h"
 #include "math/Vec2d.h"
 
+#include "SDL/SDL.h"
 #include <vector>
 
 namespace Niski
@@ -27,6 +27,7 @@ namespace Niski
 			void	addMouseListener(MouseListener* listener);
 			bool	removeMouseListener(MouseListener* listener);
 			void	dispatchMouseEvent(const MouseEvent& event) const;
+			void	dispatchMouseBtnEvent(const MouseBtnEvent& event) const;
 			
 			//
 			// TODO: Should this allow for multiple listeners? Seems
@@ -34,16 +35,12 @@ namespace Niski
 			void	setCharListener(CharListener* listener);
 			void	dispatchChar(wchar_t ch);
 
-			/* TODO: Make it clear this is a windows only function */
-			void	run(UINT uMsg, WPARAM wParam, LPARAM lParam);
+			void	receiveSDLEvent(const SDL_Event& event);
 
 		private:
-			void	handleMouseEvent(WPARAM wParam, bool pressed);
-
 			std::vector<InputListener*>		inputListeners_;
 			std::vector<MouseListener*>		mouseListeners_;
 			CharListener*					charListener_;
-			Niski::Input::Win32Translator*	translator_;
 			Niski::Math::Vector2D<int32_t>	lastMousePos_;
 		};
 	}

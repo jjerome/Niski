@@ -25,9 +25,9 @@ Niski::Input::MouseListener::mouseEventResponse RootPanel::receiveMouseEvent(con
 	return MouseListener::acknowledged;
 }
 
-Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(const Niski::Input::InputEvent& inputEvent)
+Niski::Input::InputListener::inputEventResponse RootPanel::receiveMouseButtonEvent(const Niski::Input::MouseBtnEvent& event)
 {
-	if(!isActive())
+	if (!isActive())
 	{
 		return InputListener::pass;
 	}
@@ -35,13 +35,13 @@ Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(con
 	//
 	//
 	// check if we have a new active control. 
-	if(inputEvent.getKeyCode() == Niski::Input::Mouse_LeftButton)
+	if (event.getButton() == Niski::Input::KeyCodes::Mouse_LeftButton && event.getState() == Niski::Input::KeyState::Pressed)
 	{
 		std::cout << "Attempting to set a new activeControl_ . . . ";
 
 		auto child = getChildAtPosition(mousePosition_);
 
-		if(child != nullptr)
+		if (child != nullptr)
 		{
 			std::cout << "Succeeded" << std::endl;
 			activeControl_ = child;
@@ -54,6 +54,15 @@ Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(con
 			return InputListener::pass;
 		}
 	}
+}
+
+Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(const Niski::Input::InputEvent& inputEvent)
+{
+	if (!isActive())
+	{
+		return InputListener::pass;
+	}
+
 
 	if(activeControl_)
 	{

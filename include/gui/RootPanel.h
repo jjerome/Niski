@@ -24,6 +24,8 @@ namespace Niski
 			mouseEventResponse receiveMouseEvent(const Niski::Input::MouseEvent& event);
 			mousePriorityPreference getMousePriorityPreference(void) const { return mousePriorityPreference::alwaysFirst; }
 
+			inputEventResponse receiveMouseButtonEvent(const Niski::Input::MouseBtnEvent& event);
+
 			//
 			// Keyboard Event stuff
 			inputEventResponse receiveInputEvent(const Niski::Input::InputEvent& inputEvent);

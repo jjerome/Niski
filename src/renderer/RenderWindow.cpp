@@ -6,6 +6,8 @@
 
 using namespace Niski::Renderer;
 
+#if 0
+
 LRESULT CALLBACK Niski::Renderer::renderWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	RenderWindow* window = RenderWindow::getRenderWindow(hWnd);
@@ -52,99 +54,48 @@ RenderWindow* RenderWindow::getRenderWindow(RenderWindow::nativeWindowHandle han
 
 	return nullptr;
 }
+#endif
 
-RenderWindow::RenderWindow(const std::wstring& title, const Niski::Math::Rect2D& dimensions, Niski::Input::InputSystem* inputSystem, windowStyle winStyle /* = RenderWindow::hasBorder */) 
+RenderWindow::RenderWindow(const std::string& title, const Niski::Math::Rect2D& dimensions, Niski::Input::InputSystem* inputSystem, windowStyle winStyle /* = RenderWindow::hasBorder */) 
 	: title_(title), 
 	dimensions_(dimensions), 
-	handle_(nullptr), 
+	window_(nullptr), 
 	windowStyle_(winStyle), 
 	inputSystem_(inputSystem), 
-	hasFocus_(true), 
-	win32Style_(0)
+	hasFocus_(true)
 {
-	//
-	// Add ourselves to the render window list for the winproc
-	addRenderWindow(this);
+	uint32_t flags = (winStyle == RenderWindow::hasBorder) ? SDL_WINDOW_INPUT_GRABBED : SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_GRABBED;
 
-	WNDCLASS windowClass;
-	::ZeroMemory(&windowClass, sizeof(windowClass));
+	window_ = SDL_CreateWindow(title.c_str(), dimensions.left, dimensions.top, dimensions.right, dimensions.bottom, flags);
 
-	windowClass.style = CS_OWNDC;
-	windowClass.lpfnWndProc = (WNDPROC) renderWindowProc;
-	windowClass.hInstance = ::GetModuleHandle(nullptr);
-	windowClass.lpszClassName = L"NiskiEngineWindow";
-	windowClass.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-
-	ATOM registeredClass = ::RegisterClass(&windowClass);
-	Niski::Utils::Assert(registeredClass != 0, "Failed to register Window Class", __FILE__, __FUNCSIG__, __LINE__);
-
-	win32Style_ = (windowStyle_ == noBorder) ? WS_POPUP : WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME & ~WS_MAXIMIZEBOX);
-	RECT windowRect = dimensions_.toWin32Rect();
-	windowRect.top = 0; 
-	windowRect.left = 0;
-	BOOL result = ::AdjustWindowRect(&windowRect, win32Style_, FALSE);
-
-	if(result == FALSE)
-	{
-		std::ostringstream error("Failed to get adjusted window rectangle. \n\nWindows API returned error code: ");
-		error << ::GetLastError();
-		throw RenderWindowFailedToInitalize(error.str());
-	}
-
-	handle_ = ::CreateWindow(L"NiskiEngineWindow",
-		title_.c_str(),
-		win32Style_,
-		dimensions_.left, 
-		dimensions_.top, 
-		windowRect.right - windowRect.left, 
-		windowRect.bottom - windowRect.top, 
-		nullptr,
-		nullptr,
-		::GetModuleHandle(nullptr),
-		nullptr);
-
-	if(handle_ == nullptr)
-	{
-		std::ostringstream error("Failed to create window. \n\nWindows API returned error code: ");
-		error << ::GetLastError();
-		throw RenderWindowFailedToInitalize(error.str());
-	}
-
-	::ShowWindow(handle_, SW_SHOWNORMAL);
-	::SetFocus(handle_);
 }
 
 RenderWindow::~RenderWindow(void)
 {
-	if(handle_ != nullptr)
+	if(window_ != nullptr)
 	{
-		::CloseWindow(handle_);
+		SDL_DestroyWindow(window_);
 	}
 }
 
-void RenderWindow::setTitle(const std::wstring& title)
+void RenderWindow::setTitle(const std::string& title)
 {
-	Niski::Utils::Assert(handle_ != INVALID_HANDLE_VALUE, "Invalid handle - cannot set title.", __FILE__, __FUNCSIG__, __LINE__);
-	
-	BOOL result = ::SetWindowText(handle_, title.c_str());
+	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot set title.", __FILE__, __FUNCSIG__, __LINE__);
 
-	if(result == FALSE)
-	{
-		std::ostringstream error("Failed to set window title. \n\nWindows API returned error code: ");
-		error << GetLastError();
-		throw RenderWindowFailedToUpdateWindow(error.str());
-	}
+	SDL_SetWindowTitle(window_, title.c_str());
 
 	title_ = title;
 }
 
-std::wstring RenderWindow::getTitle(void) const
+std::string RenderWindow::getTitle(void) const
 {
 	return title_;
 }
 
 void RenderWindow::setDimensions(const Niski::Math::Rect2D& dimensions)
 {
+	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot set dimensions.", __FILE__, __FUNCSIG__, __LINE__);
+
 	if(dimensions_ == dimensions)
 	{
 		//
@@ -154,33 +105,15 @@ void RenderWindow::setDimensions(const Niski::Math::Rect2D& dimensions)
 		return;
 	}
 
-	RECT windowRect = dimensions.toWin32Rect();
-	windowRect.top = 0; 
-	windowRect.left = 0;
-	BOOL result = ::AdjustWindowRect(&windowRect, 
-		win32Style_, 
-		FALSE);
-
-	if(result == FALSE)
+	if (dimensions_.top != dimensions.top || dimensions_.left == dimensions.left)
 	{
-		std::ostringstream error("Failed to get adjusted window rectangle. \n\nWindows API returned error code: ");
-		error << GetLastError();
-		throw RenderWindowFailedToInitalize(error.str());
+		SDL_SetWindowPosition(window_, dimensions.left, dimensions.top);
+		
 	}
-
-	result = ::SetWindowPos(handle_, 
-		nullptr, 
-		dimensions_.left, 
-		dimensions_.top, 
-		windowRect.right - windowRect.left, 
-		windowRect.bottom - windowRect.top, 
-		SWP_SHOWWINDOW);
-
-	if(result == FALSE)
+	
+	if (dimensions_.bottom != dimensions.bottom || dimensions_.right != dimensions.right)
 	{
-		std::ostringstream error("Failed to set window position. \n\nWindows API returned error code: ");
-		error << GetLastError();
-		throw RenderWindowFailedToUpdateWindow(error.str());
+		SDL_SetWindowSize(window_, dimensions.right, dimensions.bottom);
 	}
 
 	//
@@ -195,15 +128,12 @@ const Niski::Math::Rect2D& RenderWindow::getDimensions(void) const
 
 void RenderWindow::setWindowStyle(RenderWindow::windowStyle winStyle)
 {
-	win32Style_ = (windowStyle_ == noBorder) ? WS_POPUP : WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME & ~WS_MAXIMIZEBOX);
-	BOOL result = ::SetWindowLongPtr(handle_, GWL_STYLE, win32Style_);
+	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot set window style.", __FILE__, __FUNCSIG__, __LINE__);
 
-	if(result == FALSE)
-	{
-		std::ostringstream error("Failed to new window style for ");
-		error << ((windowStyle_ == hasBorder) ? "borderless" : "bordered") << " mode. \n\nWindows API returned error code: " << GetLastError();
-		throw RenderWindowFailedToUpdateWindow(error.str());
-	}
+	SDL_bool bordered = (windowStyle_ == noBorder) ? SDL_FALSE : SDL_TRUE;
+
+	SDL_SetWindowBordered(window_, bordered);
+	
 
 	//
 	// Set the window style after it's officially done
@@ -226,6 +156,8 @@ bool RenderWindow::hasFocus(void) const
 
 bool RenderWindow::getFocus(void)
 {
+	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot grab focus.", __FILE__, __FUNCSIG__, __LINE__);
+
 	if(hasFocus_)
 	{
 		Niski::Utils::bitch("Attempted to acquire focus on our window, but we already have focus!");
@@ -233,21 +165,75 @@ bool RenderWindow::getFocus(void)
 		return true;
 	}
 
-	hasFocus_ = ::SetFocus(handle_) != nullptr;
+	SDL_SetWindowGrab(window_, SDL_TRUE);
 
 	return hasFocus_;
 }
 
-bool RenderWindow::activateWindow(void)
+void RenderWindow::activateWindow(void)
 {
-	return ::SetForegroundWindow(handle_) != FALSE;
+	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot activate window.", __FILE__, __FUNCSIG__, __LINE__);
+
+	SDL_SetWindowGrab(window_, SDL_TRUE);
 }
 
-HWND RenderWindow::getNativeHandle(void) const
+SDL_Window* RenderWindow::getWndHandle(void) const
 {
-	return handle_;
+	return window_;
 }
 
+void RenderWindow::handleWindowEvents(const SDL_Event& evt)
+{
+	switch (evt.window.event)
+	{
+	case SDL_WINDOWEVENT_FOCUS_LOST:
+		hasFocus_ = false;
+		break;
+
+	case SDL_WINDOWEVENT_FOCUS_GAINED:
+		hasFocus_ = true;
+		break;
+
+	case SDL_WINDOWEVENT_CLOSE: 
+		//
+		// TODO: 
+		break;
+
+	default:
+		break;
+	}
+}
+
+void RenderWindow::pollEvents(void)
+{
+	SDL_Event evt;
+	while (SDL_PollEvent(&evt))
+	{
+		switch (evt.type)
+		{
+		case SDL_WINDOWEVENT:
+			handleWindowEvents(evt);
+			break;
+
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+		case SDL_TEXTINPUT:
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEMOTION:
+			if (inputSystem_)
+			{
+				inputSystem_->receiveSDLEvent(evt);
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+#if 0
 LRESULT RenderWindow::windowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMsg)
@@ -321,3 +307,4 @@ LRESULT RenderWindow::windowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(getNativeHandle(), uMsg, wParam, lParam);
 	}
 }
+#endif
