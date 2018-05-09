@@ -29,6 +29,19 @@
 #include "niski_main/GameLogicThread.h"
 #include "niski_main/RenderThread.h"
 
+int NiskiEventFilter(void* userData, SDL_Event* evt)
+{
+	if (evt->type == SDL_QUIT)
+	{
+		shouldQuit* q = reinterpret_cast<shouldQuit*>(userData);
+		//
+		// setShouldQuit is, in theory, anyways, thread safe. 
+		q->setShouldQuit(true);
+	}
+
+	return 0;
+}
+
 #ifndef _WIN32
 int main(int argc, const char* argv[])
 #else
@@ -60,6 +73,10 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	Niski::Input::InputSystem inputSystem;
 	Niski::Engine::KeyBindings keyBinds;
 	inputSystem.addInputListener(&keyBinds);
+
+	//
+	// Install our event filter. 
+	SDL_AddEventWatch(&NiskiEventFilter, &quit);
 
 	//
 	// Initialize the render window and the renderer..

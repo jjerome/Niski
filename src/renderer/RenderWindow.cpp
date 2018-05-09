@@ -6,56 +6,6 @@
 
 using namespace Niski::Renderer;
 
-#if 0
-
-LRESULT CALLBACK Niski::Renderer::renderWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	RenderWindow* window = RenderWindow::getRenderWindow(hWnd);
-
-	if(window)
-	{
-		//
-		// TODO: Why are we storing the return of windowProc in result?
-		LRESULT result = window->windowProc(uMsg, wParam, lParam);
-		return result;
-	}
-	else
-	{
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-}
-
-//
-// Static methods for RenderWindow
-RenderWindow::renderWindowList& RenderWindow::getRenderWindowList(void)
-{
-	static RenderWindow::renderWindowList list;
-	return list;
-}
-
-void RenderWindow::addRenderWindow(RenderWindow* window)
-{
-	RenderWindow::renderWindowList& list = getRenderWindowList();
-
-	list.push_back(window);
-}
-
-RenderWindow* RenderWindow::getRenderWindow(RenderWindow::nativeWindowHandle handle)
-{
-	RenderWindow::renderWindowList& list = getRenderWindowList();
-
-	for(auto window : list)
-	{
-		if(window->getNativeHandle() == handle)
-		{
-			return window;
-		}
-	}
-
-	return nullptr;
-}
-#endif
-
 RenderWindow::RenderWindow(const std::string& title, const Niski::Math::Rect2D& dimensions, Niski::Input::InputSystem* inputSystem, windowStyle winStyle /* = RenderWindow::hasBorder */) 
 	: title_(title), 
 	dimensions_(dimensions), 
@@ -64,10 +14,19 @@ RenderWindow::RenderWindow(const std::string& title, const Niski::Math::Rect2D& 
 	inputSystem_(inputSystem), 
 	hasFocus_(true)
 {
-	uint32_t flags = (winStyle == RenderWindow::hasBorder) ? SDL_WINDOW_INPUT_GRABBED : SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_GRABBED;
+	uint32_t flags = (winStyle == RenderWindow::hasBorder) ? 0 : SDL_WINDOW_BORDERLESS;
 
 	window_ = SDL_CreateWindow(title.c_str(), dimensions.left, dimensions.top, dimensions.right, dimensions.bottom, flags);
 
+	if (window_ == nullptr)
+	{
+		std::ostringstream oss;
+		oss << "SDL failed to create a window. SDL returned" << SDL_GetError();
+
+		throw RenderWindowFailedToInitalize(oss.str());
+	}
+
+	SDL_RaiseWindow(window_);
 }
 
 RenderWindow::~RenderWindow(void)
@@ -220,6 +179,7 @@ void RenderWindow::pollEvents(void)
 		case SDL_TEXTINPUT:
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEWHEEL:
 		case SDL_MOUSEMOTION:
 			if (inputSystem_)
 			{
@@ -232,79 +192,3 @@ void RenderWindow::pollEvents(void)
 		}
 	}
 }
-
-#if 0
-LRESULT RenderWindow::windowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch(uMsg)
-	{		
-	case WM_SETFOCUS:
-		hasFocus_ = true;
-		return 0;
-
-	case WM_KILLFOCUS:
-		hasFocus_ = false;
-		return 0;
-
-	case WM_ACTIVATE:
-		if(LOWORD(wParam) == WA_ACTIVE)
-		{
-			//
-			// Our window is now active
-		}
-		else
-		{
-			//
-			// Our window is now inactive
-			// TODO: Ideally we should stop rendering altogether, I think. 
-		}
-
-		return DefWindowProc(getNativeHandle(), uMsg, wParam, lParam);
-
-	case WM_DESTROY:
-		//
-		// TODO: We should end our game logic, etc. 
-		Niski::Utils::bitch("Our window was destroyed.");
-		return 0;
-
-	case WM_UNICHAR:
-		//
-		// This is specifically for WM_UNICHAR
-		// just to indicate we understand the msg
-		if (wParam == UNICODE_NOCHAR)
-		{
-			return TRUE;
-		}
-		//
-		// Otherwise bleed through to the input manager like normal. 
-
-	case WM_MOUSEWHEEL:
-	case WM_MOUSEMOVE:
-	case WM_MBUTTONDOWN:
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_XBUTTONDOWN:
-	case WM_KEYDOWN:
-	case WM_SYSKEYDOWN:
-	case WM_MBUTTONUP:
-	case WM_RBUTTONUP:
-	case WM_LBUTTONUP:
-	case WM_XBUTTONUP:
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-	case WM_CHAR:
-		//
-		// Dispatch to our attached input system. 
-		//
-		// TODO: Allow system commands to pass through, right?
-		if(inputSystem_)
-		{
-			inputSystem_->run(uMsg, wParam, lParam);
-		}
-		return 0;
-
-	default:
-		return DefWindowProc(getNativeHandle(), uMsg, wParam, lParam);
-	}
-}
-#endif

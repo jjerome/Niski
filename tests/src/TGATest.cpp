@@ -21,7 +21,7 @@ TEST(TGATest, Load)
 {
 	//
 	// Initialize all the stuff we need for each test.
-	Niski::Renderer::RenderWindow window(L"Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr);
+	Niski::Renderer::RenderWindow window("Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr);
 	Niski::Renderer::Renderer renderer(window, Niski::Math::Vector2D<int32_t>(1280, 720), Niski::Renderer::Renderer::windowed);
 
 	//

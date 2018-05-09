@@ -4,20 +4,11 @@
     <ClCompile Include="..\src\TestMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\RendererTest.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\RenderWindowTest.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ColorTests.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TGATest.cpp">
       <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\TextureTest.cpp">
-      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\src\TimerTest.cpp">
       <Filter>Source Files\Utils</Filter>
@@ -34,6 +25,15 @@
     <ClCompile Include="..\src\MathTest.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\RendererTest.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderWindowTest.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TextureTest.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -48,5 +48,15 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{f56bb5d8-5c2c-4985-807a-2304f3149f29}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Niski Tests.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\joshu\Downloads\nisk_testsi_hzY_icon.ico" />
+    <Image Include="C:\Users\joshu\Downloads\nisk_testsi_5CI_icon.ico" />
   </ItemGroup>
 </Project>
