@@ -5,18 +5,18 @@ TEST(RenderWindowTest, SuccessfulCreation)
 {
 	//
 	// Construct a bordered window. 
-	ASSERT_NO_THROW({ Niski::Renderer::RenderWindow window(L"Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder); });
+	ASSERT_NO_THROW({ Niski::Renderer::RenderWindow window("Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder); });
 
 	//
 	// Construct a borderless one. 
-	ASSERT_NO_THROW({ Niski::Renderer::RenderWindow window(L"Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::noBorder); });
+	ASSERT_NO_THROW({ Niski::Renderer::RenderWindow window("Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::noBorder); });
 }
 
 TEST(RenderWindowTest, WindowStyles)
 {
 	//
 	// 
-	Niski::Renderer::RenderWindow window(L"Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder);
+	Niski::Renderer::RenderWindow window("Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder);
 
 	//
 	// Verify the window style is correct.
@@ -36,44 +36,44 @@ TEST(RenderWindowTest, WindowStyles)
 
 TEST(RenderWindowTest, Titles)
 {
-	Niski::Renderer::RenderWindow window(L"Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder);
+	Niski::Renderer::RenderWindow window("Test Window", Niski::Math::Rect2D(0, 0, 720, 1280), nullptr, Niski::Renderer::RenderWindow::hasBorder);
 
 	//
 	// Attempt to read the initial title we've given it. 
-	EXPECT_EQ(L"Test Window", window.getTitle());
+	EXPECT_EQ("Test Window", window.getTitle());
 
 	//
 	// Read the window title directly via WinAPI
-	wchar_t testOne_windowTitle[24];
-	int result = ::GetWindowTextW(window.getNativeHandle(), testOne_windowTitle, 24);
+	char testOne_windowTitle[24];
+	int result = ::GetWindowTextA(GetActiveWindow(), testOne_windowTitle, 24);
 
 	EXPECT_TRUE(result != 0);
 
-	EXPECT_STREQ(L"Test Window", testOne_windowTitle);
+	EXPECT_STREQ("Test Window", testOne_windowTitle);
 
 	//
 	// Attempt to set a new title. 
-	EXPECT_NO_THROW({ window.setTitle(L"Test"); });
+	EXPECT_NO_THROW({ window.setTitle("Test"); });
 
 	//
 	// Attempt to read the new title. 
-	EXPECT_EQ(L"Test", window.getTitle());
+	EXPECT_EQ("Test", window.getTitle());
 
 	//
 	// Read new window title via WinAPI
-	wchar_t testTwo_windowTitle[24];
-	result = ::GetWindowTextW(window.getNativeHandle(), testTwo_windowTitle, 24);
+	char testTwo_windowTitle[24];
+	result = ::GetWindowTextA(GetActiveWindow(), testTwo_windowTitle, 24);
 
 	EXPECT_TRUE(result != 0);
 
-	EXPECT_STREQ(L"Test", testTwo_windowTitle);
+	EXPECT_STREQ("Test", testTwo_windowTitle);
 }
 
 TEST(RenderWindowTest, Dimensions)
 {
 	const Niski::Math::Rect2D rect720p(0, 0, 720, 1280);
 	const Niski::Math::Rect2D rect480p(0, 0, 480, 640);
-	Niski::Renderer::RenderWindow window(L"Test Window", rect720p, nullptr, Niski::Renderer::RenderWindow::hasBorder);
+	Niski::Renderer::RenderWindow window("Test Window", rect720p, nullptr, Niski::Renderer::RenderWindow::hasBorder);
 
 	//
 	// Attempt to read the dimensions of the window.
@@ -84,7 +84,7 @@ TEST(RenderWindowTest, Dimensions)
 	// NOTE: Only use GetClientRect as RenderWindow automatically adjusts to get the client rect
 	// to be the same as the dimensions we give it. 
 	RECT clientRect;
-	::GetClientRect(window.getNativeHandle(), &clientRect);
+	::GetClientRect(GetActiveWindow(), &clientRect);
 
 	EXPECT_TRUE(EqualRect(&rect720p.toWin32Rect(), &clientRect) == TRUE);
 
@@ -99,7 +99,7 @@ TEST(RenderWindowTest, Dimensions)
 	//
 	// Read from WinAPI to make sure the dimensions are correct
 	RECT updatedClientRect;
-	::GetClientRect(window.getNativeHandle(), &updatedClientRect);
+	::GetClientRect(GetActiveWindow(), &updatedClientRect);
 
 	EXPECT_TRUE(EqualRect(&rect480p.toWin32Rect(), &updatedClientRect) == TRUE);
 }

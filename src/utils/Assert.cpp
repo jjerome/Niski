@@ -22,9 +22,9 @@ Assert::Assert(bool assertion, const std::string& errorMessage, const std::strin
 		return;
 	}
 
-	AssertCallBack assert = getAssertCallBack();
+	AssertCallBack assertCB = getAssertCallBack();
 
-	if(assert == nullptr)
+	if(assertCB == nullptr)
 	{
 		//
 		// Log..
@@ -41,7 +41,7 @@ Assert::Assert(bool assertion, const std::string& errorMessage, const std::strin
 
 	//
 	// Call the callback..
-	callBackReturnVal ret = (*assert)(errorMessage, fileName, functionName, line);
+	callBackReturnVal ret = (*assertCB)(errorMessage, fileName, functionName, line);
 
 	switch(ret)
 	{
