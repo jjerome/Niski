@@ -52,8 +52,7 @@ const std::string KeyBindings::getBinding(Niski::Input::KeyCodes key)
 		// Log it
 		{
 			std::ostringstream err;
-			Niski::Input::KeyCodeToString t;
-			err << "Failed to obtain binding for key <" << t.translate(key) << ">";
+			err << "Failed to obtain binding for key <" << Niski::Input::KeyCodeToString(key) << ">";
 			Niski::Utils::bitch(err.str());
 		}
 
