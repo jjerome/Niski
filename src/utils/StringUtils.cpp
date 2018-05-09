@@ -91,12 +91,10 @@ void String::parse(const std::string& str, std::vector<std::string>& result)
 			{
 				std::string restOfItem;
 				bool found = false;
+
 				//
 				// Do a search for the end of quote. Make sure it isn't
 				// nullified by "\"
-
-				//
-				// TODO: Does this handle no end quote at the end of a string?
 				do 
 				{
 					getline(ss, restOfItem, '"');			
