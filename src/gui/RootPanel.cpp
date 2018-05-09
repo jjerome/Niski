@@ -54,17 +54,17 @@ Niski::Input::InputListener::inputEventResponse RootPanel::receiveMouseButtonEve
 		{
 			std::cout << "Succeeded" << std::endl;
 			activeControl_ = child;
+
+			return InputListener::acknowledged;
 		}
 		else
 		{
 			std::cout << "Failed" << std::endl;
 			activeControl_ = nullptr;
-
-			return InputListener::pass;
 		}
 	}
 
-	return InputListener::acknowledged;
+	return InputListener::pass;
 }
 
 Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(const Niski::Input::InputEvent& inputEvent)
@@ -80,13 +80,13 @@ Niski::Input::InputListener::inputEventResponse RootPanel::receiveInputEvent(con
 		//
 		// TODO: send activeControl_ the input event.
 		activeControl_->receiveKeyboardInput(inputEvent);
-	}
-	else
-	{
-		return InputListener::pass;
+
+		return InputListener::acknowledged;
 	}
 
-	return InputListener::acknowledged;
+	return InputListener::pass;
+
+	
 }
 
 void RootPanel::receiveTextInput(std::string str)

@@ -91,6 +91,13 @@ Niski::Input::InputListener::inputEventResponse KeyBindings::receiveMouseButtonE
 		std::string command = getBinding(event.getButton());
 
 		//
+		// TODO: Temporary?
+		if (command == "INVALID_KEY")
+		{
+			return pass;
+		}
+
+		//
 		// If the command begins with +
 		// then run the - version of the command. 
 		if (command[0] == '+')
