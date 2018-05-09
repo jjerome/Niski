@@ -26,16 +26,16 @@ namespace Niski
 			static logWriter& getLogWriter(void);
 
 		public:
-			logWriter(const std::wstring& filename);
+			logWriter(const std::string& filename);
 			~logWriter(void);
 
-			void write(const std::wstring& message, uint16_t flags);
+			void write(const std::string& message, uint16_t flags);
 
 		private:
-			std::wstring writeLogInformation(void);
+			std::string writeLogInformation(void);
 
 		private:
-			std::wofstream file_;
+			std::ofstream file_;
 			std::mutex mutex_;
 		};
 
@@ -45,20 +45,8 @@ namespace Niski
 		{
 			logWriter& log = logWriter::getLogWriter();
 
-			std::wostringstream data;
-			data << L"[Info] " << message.c_str();
-
-			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
-		}
-
-		//
-		// General information content (hardware, operating system information, etc)
-		void inline information(const std::wstring& message)
-		{
-			logWriter& log = logWriter::getLogWriter();
-
-			std::wostringstream data;
-			data << L"[Info] " << message;
+			std::ostringstream data;
+			data << "[Info] " << message;
 
 			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
 		}
@@ -70,21 +58,8 @@ namespace Niski
 		{
 			logWriter& log = logWriter::getLogWriter();
 
-			std::wostringstream data;
-			data << L"[Bitch] " << message.c_str();
-
-			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
-		}
-
-		//
-		// A less serious warning - typically means the program has
-		// solved the problem, but you should be aware of it
-		void inline bitch(const std::wstring& message)
-		{
-			logWriter& log = logWriter::getLogWriter();
-
-			std::wostringstream data;
-			data << L"[Bitch] " << message;
+			std::ostringstream data;
+			data << "[Bitch] " << message;
 
 			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
 		}
@@ -96,21 +71,8 @@ namespace Niski
 		{
 			logWriter& log = logWriter::getLogWriter();
 
-			std::wostringstream data;
-			data << L"[Warning] " << message.c_str();
-
-			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
-		}
-
-		//
-		// A warning - things might get messed up because the program
-		// attempted to solve a problem that isn't obvious
-		void inline warning(const std::wstring& message)
-		{
-			logWriter& log = logWriter::getLogWriter();
-
-			std::wostringstream data;
-			data << L"[Warning] " << message;
+			std::ostringstream data;
+			data << "[Warning] " << message;
 
 			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
 		}
@@ -122,23 +84,8 @@ namespace Niski
 			logWriter& log = logWriter::getLogWriter();
 
 
-			std::wostringstream data;
-			data << L"[Error] " << message.c_str();
-
-			//
-			// TODO: Should we be forcing a flush to the disk or hope a FATAL happens?
-			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine);
-		}
-
-		//
-		// SNAFU
-		void inline error(const std::wstring& message)
-		{
-			logWriter& log = logWriter::getLogWriter();
-
-
-			std::wostringstream data;
-			data << L"[Error] " << message;
+			std::ostringstream data;
+			data << "[Error] " << message.c_str();
 
 			//
 			// TODO: Should we be forcing a flush to the disk or hope a FATAL happens?
@@ -151,20 +98,8 @@ namespace Niski
 		{
 			logWriter& log = logWriter::getLogWriter();
 
-			std::wostringstream data;
-			data << L"[FATAL] " << message.c_str();
-
-			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine | logWriter::forceFlush);
-		}
-
-		//
-		// FUBAR
-		void inline fatal(const std::wstring& message)
-		{
-			logWriter& log = logWriter::getLogWriter();
-
-			std::wostringstream data;
-			data << L"[FATAL] " << message;
+			std::ostringstream data;
+			data << "[FATAL] " << message.c_str();
 
 			log.write(data.str(), logWriter::writeTimeInfo | logWriter::writeNewLine | logWriter::forceFlush);
 		}

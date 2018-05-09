@@ -9,12 +9,12 @@ TextInput::TextInput(Niski::GUI::Base* parent, const std::string& name, const Ni
 {
 	//
 	// The font and size should be configurable. 
-	label_ = new Label(this, name + "Label", position, L"Arial", 9);
+	label_ = new Label(this, name + "Label", position, "Arial", 9);
 	//
 	// TODO: This likely won't make it, but we're not going to
 	// update the cursor position because this text is supposed 
 	// to go away on focus (yet to be implemented) 
-	label_->setText(L"Please enter some text...");
+	label_->setText("Please enter some text...");
 	//
 	// TODO: This is nonsense. 
 	label_->setBounds(Niski::Math::Rect2D(position.y, position.x, 500, 150));
@@ -71,7 +71,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 		return;
 	}
 
-	std::wstring str = label_->getText();
+	std::string str = label_->getText();
 
 	switch (event.getKeyCode())
 	{
@@ -111,7 +111,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 
 	case Niski::Input::KeyCodes::Key_Enter:
 	case Niski::Input::KeyCodes::Key_Pad_Enter:
-		str.insert(cursorPos_.x, L"\n");
+		str.insert(cursorPos_.x, "\n");
 
 		//
 		// TODO: Should this perform a submit?
@@ -136,7 +136,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 		break;
 
 	case Niski::Input::KeyCodes::Key_Tab:
-		str.insert(cursorPos_.x, L"[TODO: TAB]");
+		str.insert(cursorPos_.x, "[TODO: TAB]");
 		++cursorPos_.x;
 		break;
 
@@ -151,13 +151,13 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 	label_->setText(str);
 }
 
-void TextInput::receiveChar(wchar_t ch)
+void TextInput::receiveTextInput(std::string str)
 {
-	std::wstring str = label_->getText();
+	std::string data = label_->getText();
 
-	str.insert(cursorPos_.x, 1, ch);
+	data.insert(cursorPos_.x, str);
 
-	label_->setText(str);
+	label_->setText(data);
 
 	++cursorPos_.x;
 }

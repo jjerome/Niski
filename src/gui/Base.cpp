@@ -302,8 +302,8 @@ void Base::receiveMouseInput(const Niski::Input::InputEvent& event)
 	Niski::Utils::UnreferencedParameter(event);
 }
 
-void Base::receiveChar(wchar_t ch)
+void Base::receiveTextInput(std::string str)
 {
 	// todo
-	Niski::Utils::UnreferencedParameter(ch);
+	Niski::Utils::UnreferencedParameter(str);
 }

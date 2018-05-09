@@ -22,7 +22,7 @@ namespace Niski
 
 			virtual void receiveKeyboardInput(const Niski::Input::InputEvent& event);
 
-			virtual void receiveChar(wchar_t ch);
+			virtual void receiveTextInput(std::string str);
 
 		private:
 			Label* label_;

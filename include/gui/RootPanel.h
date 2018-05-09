@@ -2,6 +2,7 @@
 #define __GUI_ROOTPANEL_H__
 
 #include "gui/Base.h"
+#include "gui/Label.h"
 #include "input/MouseEvent.h"
 #include "input/InputEvent.h"
 #include "input/CharListener.h"
@@ -33,10 +34,11 @@ namespace Niski
 
 			//
 			// Char listener stuff
-			void receiveChar(wchar_t ch);
+			void receiveTextInput(std::string str);
 
 		private:
 			Base* activeControl_;
+			Label* mousePositionLbl_;
 			bool isActive_;
 			Niski::Math::Vector2D<int32_t> mousePosition_;
 		};

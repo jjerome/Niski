@@ -21,14 +21,14 @@ namespace Niski
 			void setLineColor(const Niski::Utils::Color& color);
 			Niski::Utils::Color getLineColor(void) const;
 
-			void setTitle(const std::wstring& name);
-			std::wstring getTitle(void) const;
+			void setTitle(const std::string& name);
+			std::string getTitle(void) const;
 
-			void setAxisNameX(const std::wstring& name);
-			std::wstring getAxisNameX(void) const;
+			void setAxisNameX(const std::string& name);
+			std::string getAxisNameX(void) const;
 
-			void setAxisNameY(const std::wstring& name);
-			std::wstring getAxisNameY(void) const;
+			void setAxisNameY(const std::string& name);
+			std::string getAxisNameY(void) const;
 
 		private:
 			Label*	title_;
@@ -48,9 +48,9 @@ LineGraph::LineGraph(Base* parent) : Base(parent, "LineGraph"), lineColor_(Niski
 {
 	//
 	// Initialize the fonts... 
-	title_ = new Label(this, "lineGraphTitle", Niski::Math::Vector2D<int32_t>(0, 0), L"Arial", 12);
-	axisNameX_ = new Label(this, "axisNameX", Niski::Math::Vector2D<int32_t>(0, 0), L"Arial", 12);
-	axisNameY_ = new Label(this, "axisNameY", Niski::Math::Vector2D<int32_t>(0, 0), L"Arial", 12);
+	title_ = new Label(this, "lineGraphTitle", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
+	axisNameX_ = new Label(this, "axisNameX", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
+	axisNameY_ = new Label(this, "axisNameY", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
 }
 
 LineGraph::~LineGraph(void)
@@ -84,12 +84,12 @@ Niski::Utils::Color LineGraph::getLineColor(void) const
 	return lineColor_;
 }
 
-void LineGraph::setTitle(const std::wstring& name)
+void LineGraph::setTitle(const std::string& name)
 {
 	title_->setText(name);
 }
 
-std::wstring LineGraph::getTitle(void) const
+std::string LineGraph::getTitle(void) const
 {
 	return title_->getText();
 }

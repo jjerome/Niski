@@ -311,6 +311,8 @@ namespace Niski
 			case SDLK_RSHIFT: return Key_RightShift;
 			case SDLK_LALT: return Key_LeftAlt;
 			case SDLK_RALT: return Key_RightAlt;
+			case SDLK_LCTRL: return Key_LeftControl;
+			case SDLK_RCTRL: return Key_RightControl;
 			case SDLK_APPLICATION: return Key_App;
 			case SDLK_LGUI: return Key_LeftWin;
 			case SDLK_RGUI: return Key_RightWin;

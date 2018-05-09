@@ -46,7 +46,7 @@ namespace Niski
 			};
 
 		public:
-			static void openDataDirectory(const std::wstring& gameName) { dir = new DataDirectory(gameName); }
+			static void openDataDirectory(const std::string& gameName) { dir = new DataDirectory(gameName); }
 			static DataDirectory* getDataDirectory() {
 				Niski::Utils::Assert(dir != nullptr, "Tried to get the writable directory before it was initialized.", __FILE__, __FUNCSIG__, __LINE__);
 				return dir;
@@ -56,7 +56,7 @@ namespace Niski
 			static DataDirectory* dir;
 
 		public:
-			DataDirectory(const std::wstring& gameName);
+			DataDirectory(const std::string& gameName);
 			~DataDirectory(void);
 
 			//
@@ -64,14 +64,14 @@ namespace Niski
 			// also guarantees that the path exists
 			// NOTE: this doesn't cache results so repeatedly calling it
 			// is ill-advised. 
-			const std::wstring getPath(const std::wstring& folderName) const;
+			const std::string getPath(const std::string& folderName) const;
 
 		private:
-			pathExistsResponse pathExists(const std::wstring& path, pathExistsAction action = create) const;
+			pathExistsResponse pathExists(const std::string& path, pathExistsAction action = create) const;
 
 		private:
-			std::wstring gameName_;
-			wchar_t path_[MAX_PATH];
+			std::string gameName_;
+			char path_[MAX_PATH];
 		};
 	}
 }

@@ -33,7 +33,7 @@ namespace Niski
 			// TODO: Should this allow for multiple listeners? Seems
 			// pointless outside of the GUI engine tbh. 
 			void	setCharListener(CharListener* listener);
-			void	dispatchChar(wchar_t ch);
+			void	dispatchTextInput(std::string str);
 
 			void	receiveSDLEvent(const SDL_Event& event);
 

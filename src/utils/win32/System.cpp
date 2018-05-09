@@ -8,7 +8,7 @@
 #include <Windows.h>
 #include <Shlobj.h>
 #include <Shlwapi.h>
-#include <tchar.h>
+#include <direct.h>
 
 #include "utils/Win32/System.h"
 #include "utils/Assert.h"
@@ -26,23 +26,23 @@ Niski::Math::Vector2D<int32_t> Win32::getDesktopResolution(void)
 	return resolution;
 }
 
-bool createFolder(const std::wstring& path)
+bool createFolder(const std::string& path)
 {
-	return _wmkdir(path.c_str()) != -1;
+	return _mkdir(path.c_str()) != -1;
 }
 
-std::wstring Win32::getDataDirectory(void)
+std::string Win32::getDataDirectory(void)
 {
-	TCHAR path[MAX_PATH];
-	HRESULT result = ::SHGetFolderPath(nullptr, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
+	char path[MAX_PATH];
+	HRESULT result = ::SHGetFolderPathA(nullptr, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path);
 
 	Niski::Utils::Assert(result == S_OK, "Failed to get folder path to user's \"My Documents\" folder", __FILE__, __FUNCSIG__, __LINE__);
 
 	//
 	// Do we need to create these folders prior?
-	::PathAppend(path, TEXT("My Games"));
+	::PathAppendA(path, "My Games");
 
-	if(::PathFileExists(path) == FALSE)
+	if(::PathFileExistsA(path) == FALSE)
 	{
 		bool ret = createFolder(path);
 
@@ -54,9 +54,9 @@ std::wstring Win32::getDataDirectory(void)
 		}
 	}
 
-	::PathAppend(path, TEXT("Niski Engine"));
+	::PathAppendA(path, "Niski Engine");
 
-	if(::PathFileExists(path) == FALSE)
+	if(::PathFileExistsA(path) == FALSE)
 	{
 		bool ret = createFolder(path);
 
@@ -73,19 +73,19 @@ std::wstring Win32::getDataDirectory(void)
 		// Make our directory structure in the data folder.. kinda hacky. 
 		// TODO: There should be a way to specify what folders you need... as well as 
 		// the ability to change the name of the game folder.. 
-		std::vector<std::wstring> folders;
-		folders.push_back(L"config");
-		folders.push_back(L"logs");
-		folders.push_back(L"saves");
+		std::vector<std::string> folders;
+		folders.push_back("config");
+		folders.push_back("logs");
+		folders.push_back("saves");
 
 		for(auto folder : folders)
 		{
-			TCHAR tempPath[MAX_PATH];
-			_tcscpy_s(tempPath, MAX_PATH, path);
+			char tempPath[MAX_PATH];
+			strcpy_s(tempPath, MAX_PATH, path);
 
-			::PathAppend(tempPath, folder.c_str());
+			::PathAppendA(tempPath, folder.c_str());
 
-			if(::PathFileExists(tempPath) == FALSE)
+			if(::PathFileExistsA(tempPath) == FALSE)
 			{
 				createFolder(tempPath);
 			}

@@ -9,9 +9,9 @@ using namespace Niski::Renderer;
 
 //
 // TODO: Hack
-const std::wstring Win32Font::ansiPreload = L"?!@#$%^&*()-_=+[{]}\\|'\";:/.>,<`~ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const std::string Win32Font::ansiPreload = "?!@#$%^&*()-_=+[{]}\\|'\";:/.>,<`~ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-Win32Font::Win32Font(const std::wstring& fontFace, uint32_t size, uint32_t flags) 
+Win32Font::Win32Font(const std::string& fontFace, uint32_t size, uint32_t flags) 
 	: dc_(nullptr), font_(nullptr), bitmap_(nullptr), bits_(nullptr), fontFace_(fontFace), fontSize_(size), flags_(flags)
 {
 	int weight = (flags & Styles::Bold) ? FW_BOLD : FW_NORMAL;
@@ -34,7 +34,7 @@ Win32Font::Win32Font(const std::wstring& fontFace, uint32_t size, uint32_t flags
 	// Make the height negative because the size we get is not in device units
 	int32_t height = -(::MulDiv(size, ::GetDeviceCaps(dc_, LOGPIXELSY), 72));
 
-	font_ = ::CreateFont(height, 0, 0, 0, weight, italics, underline, strikeout, 
+	font_ = ::CreateFontA(height, 0, 0, 0, weight, italics, underline, strikeout, 
 		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, 
 		DEFAULT_PITCH | FF_DONTCARE, fontFace.c_str());
 
@@ -133,7 +133,7 @@ Win32Font::~Win32Font(void)
 	}
 }
 
-bool Win32Font::preloadGlyphs(const std::wstring& glyphs, Niski::Renderer::Renderer& renderer)
+bool Win32Font::preloadGlyphs(const std::string& glyphs, Niski::Renderer::Renderer& renderer)
 {
 	//
 	// TODO: This function is far too complex..
@@ -349,7 +349,7 @@ bool Win32Font::preloadGlyphs(const std::wstring& glyphs, Niski::Renderer::Rende
 	return ret;
 }
 
-Niski::Math::Vector2D<int32_t> Win32Font::measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::wstring& text)
+Niski::Math::Vector2D<int32_t> Win32Font::measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::string& text)
 {
 	Niski::Math::Vector2D<int32_t> size(0, fontHeight_);
 
@@ -393,7 +393,7 @@ Niski::Math::Vector2D<int32_t> Win32Font::measureText(const Niski::Math::Vector2
 }
 
 void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::Rect2D& renderRect, 
-					   const std::wstring& text, const Niski::Utils::Color& color) const
+					   const std::string& text, const Niski::Utils::Color& color) const
 {
 	//
 	// TODO: fix support for letters that go below the line, typically. 

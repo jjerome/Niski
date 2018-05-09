@@ -1,4 +1,5 @@
 #include "utils/DataDirectory.h"
+#include <direct.h>
 
 using namespace Niski::Utils;
 
@@ -8,13 +9,13 @@ using namespace Niski::Utils;
 DataDirectory* DataDirectory::dir = nullptr;
 
 
-DataDirectory::DataDirectory(const std::wstring& gameName) : gameName_(gameName)
+DataDirectory::DataDirectory(const std::string& gameName) : gameName_(gameName)
 {
 	//
 	// initialize our member.
-	::ZeroMemory(path_, MAX_PATH * sizeof(wchar_t));
+	::ZeroMemory(path_, MAX_PATH * sizeof(char));
 
-	HRESULT result = ::SHGetFolderPath(nullptr, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path_);
+	HRESULT result = ::SHGetFolderPathA(nullptr, CSIDL_PERSONAL | CSIDL_FLAG_CREATE, nullptr, SHGFP_TYPE_CURRENT, path_);
 
 	//
 	// TODO: More descriptive error text (GetLastError)
@@ -22,7 +23,7 @@ DataDirectory::DataDirectory(const std::wstring& gameName) : gameName_(gameName)
 
 	//
 	// Check if the "My Games" path exists, if not, create it
-	::PathAppend(path_, TEXT("My Games"));
+	::PathAppendA(path_, "My Games");
 
 	if(pathExists(path_, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
 	{
@@ -33,7 +34,7 @@ DataDirectory::DataDirectory(const std::wstring& gameName) : gameName_(gameName)
 
 	//
 	// Now check if %user%\documents\my games\<game name> exists and create it, if it doesn't
-	::PathAppend(path_, gameName_.data());
+	::PathAppendA(path_, gameName_.data());
 
 	if(pathExists(path_, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
 	{
@@ -49,12 +50,12 @@ DataDirectory::DataDirectory(const std::wstring& gameName) : gameName_(gameName)
 DataDirectory::~DataDirectory(void)
 {}
 
-const std::wstring DataDirectory::getPath(const std::wstring& folderName) const
+const std::string DataDirectory::getPath(const std::string& folderName) const
 {
-	TCHAR tempPath[MAX_PATH];
-	_tcscpy_s(tempPath, MAX_PATH, path_);
+	char tempPath[MAX_PATH];
+	strcpy_s(tempPath, MAX_PATH, path_);
 
-	::PathAppend(tempPath, folderName.data());
+	::PathAppendA(tempPath, folderName.data());
 
 	if(pathExists(tempPath, pathExistsAction::create) == pathExistsResponse::pathDoesNotExist_FailedToCreate)
 	{
@@ -64,13 +65,13 @@ const std::wstring DataDirectory::getPath(const std::wstring& folderName) const
 		// on our end (e.g. path_ wasn't valid to begin with)
 		Niski::Utils::Assert(false, "Failed to create path", __FILE__, __FUNCSIG__, __LINE__);
 
-		return L"INVALID_PATH";
+		return "INVALID_PATH";
 	}
 
-	return std::wstring(tempPath);
+	return std::string(tempPath);
 }
 
-DataDirectory::pathExistsResponse DataDirectory::pathExists(const std::wstring& path, pathExistsAction action /* = create */) const
+DataDirectory::pathExistsResponse DataDirectory::pathExists(const std::string& path, pathExistsAction action /* = create */) const
 {
 	//
 	// Check if a path exists. It's possible for PathFileExists to lie, initially.
@@ -83,7 +84,7 @@ DataDirectory::pathExistsResponse DataDirectory::pathExists(const std::wstring& 
 
 	do 
 	{
-		result = ::PathFileExists(path.data());
+		result = ::PathFileExistsA(path.data());
 		
 		if(result == TRUE)
 		{
@@ -99,7 +100,7 @@ DataDirectory::pathExistsResponse DataDirectory::pathExists(const std::wstring& 
 		// Attempt to create it, if we're allowed. 
 		if(action == pathExistsAction::create)
 		{
-			if(_wmkdir(path.data()) == -1)
+			if(_mkdir(path.data()) == -1)
 			{
 				return pathExistsResponse::pathDoesNotExist_FailedToCreate;
 			}

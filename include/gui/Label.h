@@ -23,14 +23,14 @@ namespace Niski
 			//
 			// TODO: no flag support.
 			Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, 
-				const std::wstring& fontFace, int16_t size);
+				const std::string& fontFace, int16_t size);
 			~Label(void);
 
 			void						precache(Niski::Renderer::Renderer& renderer);
 			void						render(Niski::Renderer::Renderer& renderer) const;
 			
-			void						setText(const std::wstring& text);
-			const std::wstring &		getText(void) const;
+			void						setText(const std::string& text);
+			const std::string &		getText(void) const;
 
 			void						setColor(const Niski::Utils::Color& color);
 			const Niski::Utils::Color &	getColor(void) const;
@@ -45,7 +45,7 @@ namespace Niski
 			void						sizeToContents(void);
 
 		private:
-			std::wstring				text_;
+			std::string				text_;
 			bool						needsToPreload_;
 			Niski::Renderer::Win32Font*	font_;
 			Niski::Utils::Color			color_;

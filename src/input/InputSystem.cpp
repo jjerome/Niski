@@ -136,11 +136,11 @@ void InputSystem::setCharListener(CharListener* charListener)
 	charListener_ = charListener;
 }
 
-void InputSystem::dispatchChar(wchar_t ch)
+void InputSystem::dispatchTextInput(std::string str)
 {
 	if (charListener_ != nullptr)
 	{
-		charListener_->receiveChar(ch);
+		charListener_->receiveTextInput(str);
 	}
 }
 
@@ -171,17 +171,17 @@ void InputSystem::receiveSDLEvent(const SDL_Event& evt)
 	{
 		//
 		// TODO: 
-		dispatchChar(wchar_t(evt.text.text));
+		dispatchTextInput(evt.text.text);
 	}
 	break;
 
 	case SDL_MOUSEWHEEL:
 	case SDL_MOUSEMOTION:
 	{
-		Niski::Math::Vector2D<int32_t> difference(evt.motion.xrel, evt.motion.yrel);
+		Niski::Math::Vector2D<int32_t> position(evt.motion.x, evt.motion.y);
 		//
 		// TODO: Support evt.wheel.direction 
-		MouseEvent mouseEvent(difference, evt.wheel.y);
+		MouseEvent mouseEvent(position, evt.wheel.y);
 		dispatchMouseEvent(mouseEvent);
 	}
 	break;

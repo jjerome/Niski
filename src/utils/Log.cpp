@@ -11,16 +11,16 @@ using namespace Niski::Utils;
 
 logWriter& logWriter::getLogWriter(void)
 {
-	static std::wstring path;
+	static std::string path;
 
 	if (path.empty())
 	{
-		std::wostringstream name;
+		std::ostringstream name;
 		std::time_t time = std::time(nullptr);
 		DataDirectory* dir = DataDirectory::getDataDirectory();
-		name << dir->getPath(L"logs") << '\\';
-		name << std::put_time(std::localtime(&time), L"%Y-%m-%d");
-		name << L".log";
+		name << dir->getPath("logs") << '\\';
+		name << std::put_time(std::localtime(&time), "%Y-%m-%d");
+		name << ".log";
 
 		path = name.str();
 	}
@@ -29,7 +29,7 @@ logWriter& logWriter::getLogWriter(void)
 	return log;
 }
 
-logWriter::logWriter(const std::wstring& filename)
+logWriter::logWriter(const std::string& filename)
 {
 	file_.open(filename.c_str(), std::fstream::app);
 
@@ -38,22 +38,22 @@ logWriter::logWriter(const std::wstring& filename)
 	// there's really no other way to notify the user
 	Niski::Utils::Assert(file_.is_open(), "Failed to open log file.", __FILE__, __FUNCSIG__, __LINE__);
 
-	write(L"================ Log File Started ================", writeTimeInfo | writeNewLine);
+	write("================ Log File Started ================", writeTimeInfo | writeNewLine);
 }
 
 logWriter::~logWriter(void)
 {
 	if(file_.is_open())
 	{
-		write(L"================ Log File Ended ================", writeTimeInfo | writeNewLine | forceFlush);
+		write("================ Log File Ended ================", writeTimeInfo | writeNewLine | forceFlush);
 
 		file_.close();
 	}
 }
 
-void logWriter::write(const std::wstring& message, uint16_t flags)
+void logWriter::write(const std::string& message, uint16_t flags)
 {
-	std::wstring data;
+	std::string data;
 
 	if(flags & writeTimeInfo)
 	{
@@ -68,7 +68,7 @@ void logWriter::write(const std::wstring& message, uint16_t flags)
 	{
 		if(data[data.length() - 1] != '\n')
 		{
-			data += L'\n';
+			data += '\n';
 		}
 	}
 
@@ -85,21 +85,21 @@ void logWriter::write(const std::wstring& message, uint16_t flags)
 	}
 	mutex_.unlock();
 
-	wprintf(data.c_str());
+	printf(data.c_str());
 }
 
-std::wstring logWriter::writeLogInformation(void)
+std::string logWriter::writeLogInformation(void)
 {
 	std::time_t time = std::time(nullptr);
 	std::tm* localTime = std::localtime(&time);
 
 	//
 	// TODO: Is wostringstream really necessary for this?
-	std::wostringstream str;
+	std::ostringstream str;
 
 	//
 	// Write the current date in the format mon/day/year
-	str << std::put_time(localTime, L"%d/%m/%y - %H:%M:%S ");
+	str << std::put_time(localTime, "%d/%m/%y - %H:%M:%S ");
 
 	return str.str();
 }

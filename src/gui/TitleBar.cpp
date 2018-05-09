@@ -8,11 +8,11 @@ namespace Niski
 		class TitleBar : public Base
 		{
 		public:
-			TitleBar(Base* parent, const std::wstring& title);
+			TitleBar(Base* parent, const std::string& title);
 			~TitleBar(void);
 
-			void			setTitle(const std::wstring& title);
-			std::wstring	getTitle(void) const;
+			void			setTitle(const std::string& title);
+			std::string	getTitle(void) const;
 
 		private:
 			Label* label_;
@@ -22,9 +22,9 @@ namespace Niski
 
 using namespace Niski::GUI;
 
-TitleBar::TitleBar(Base* parent, const std::wstring& title) : Base(parent, "TitleBar")
+TitleBar::TitleBar(Base* parent, const std::string& title) : Base(parent, "TitleBar")
 {
-	label_ = new Label(this, "titleBarLabel", Niski::Math::Vector2D<int32_t>(0, 0), L"Arial", 14);
+	label_ = new Label(this, "titleBarLabel", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 14);
 	label_->setText(title);
 }
 
@@ -33,12 +33,12 @@ TitleBar::~TitleBar(void)
 	// ...
 }
 
-void TitleBar::setTitle(const std::wstring& title)
+void TitleBar::setTitle(const std::string& title)
 {
 	label_->setText(title);
 }
 
-std::wstring TitleBar::getTitle(void) const
+std::string TitleBar::getTitle(void) const
 {
 	return label_->getText();
 }

@@ -83,7 +83,7 @@ namespace Niski
 			// Input related stuff
 			virtual void							receiveKeyboardInput(const Niski::Input::InputEvent& event);
 			virtual void							receiveMouseInput(const Niski::Input::InputEvent& event);
-			virtual void							receiveChar(wchar_t ch);
+			virtual void							receiveTextInput(std::string str);
 
 		private:
 			Base*							parent_;

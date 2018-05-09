@@ -1,6 +1,8 @@
 ﻿// Niski.cpp : Defines the entry point for the console application.
 //
 
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include "niski_main/Niski.h"
 
 #include <sstream>
@@ -62,7 +64,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	//
 	// Set up our writable directory for configs / etc. 
-	Niski::Utils::DataDirectory::openDataDirectory(L"Pong_Game");
+	Niski::Utils::DataDirectory::openDataDirectory("Pong_Game");
 	//
 	// Install the win32 assert callback. 
 	Niski::Utils::Assert::installAssertCallBack(Niski::Utils::Win32::win32AssertCallBack);

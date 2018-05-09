@@ -15,7 +15,7 @@ namespace Niski
 			MouseEvent(const Niski::Math::Vector2D<int32_t>& difference, int32_t wheelScroll) : difference_(difference), wheelScroll_(wheelScroll) {}
 			~MouseEvent(void) {}
 
-			const Niski::Math::Vector2D<int32_t>& getPositionDifference(void) const
+			const Niski::Math::Vector2D<int32_t>& getPosition(void) const
 			{
 				return difference_;
 			}

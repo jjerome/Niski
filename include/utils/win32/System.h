@@ -13,7 +13,7 @@ namespace Niski
 		namespace Win32
 		{
 			Niski::Math::Vector2D<int32_t> getDesktopResolution(void);
-			std::wstring getDataDirectory(void);
+			std::string getDataDirectory(void);
 			std::string getErrorString(DWORD messageID);
 		}
 	}

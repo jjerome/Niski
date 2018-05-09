@@ -3,7 +3,7 @@
 
 using namespace Niski::GUI;
 
-Label::Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, const std::wstring& fontFace, int16_t size) 
+Label::Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, const std::string& fontFace, int16_t size) 
 	: Base(parent, name), needsToPreload_(true), color_(Niski::Utils::Color::white)
 {
 	//
@@ -36,12 +36,12 @@ void Label::render(Niski::Renderer::Renderer& renderer) const
 	font_->render(renderer, getBounds(), text_, color_);
 }
 
-void Label::setText(const std::wstring& text)
+void Label::setText(const std::string& text)
 {
 	text_ = text;
 }
 
-const std::wstring& Label::getText(void) const
+const std::string& Label::getText(void) const
 {
 	return text_;
 }

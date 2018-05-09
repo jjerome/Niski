@@ -10,7 +10,7 @@ namespace Niski
 		class CharListener
 		{
 		public:
-			virtual void receiveChar(wchar_t ch) = 0;
+			virtual void receiveTextInput(std::string str) = 0;
 		};
 	}
 }

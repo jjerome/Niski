@@ -18,7 +18,7 @@ namespace Niski
 		class Win32Font
 		{
 		public:
-			static std::wstring const ansiPreload;
+			static std::string const ansiPreload;
 			static Niski::Math::Vector2D<int32_t> const textureDimensions;
 
 		public:
@@ -56,19 +56,19 @@ namespace Niski
 			};
 
 		public:
-			Win32Font(const std::wstring& fontFace, uint32_t size, uint32_t flags);
+			Win32Font(const std::string& fontFace, uint32_t size, uint32_t flags);
 			~Win32Font(void);
 
-			bool							preloadGlyphs(const std::wstring& glyphs, Niski::Renderer::Renderer& renderer);
+			bool							preloadGlyphs(const std::string& glyphs, Niski::Renderer::Renderer& renderer);
 
-			std::wstring					getFontFace(void)	const { return fontFace_; }
+			std::string					getFontFace(void)	const { return fontFace_; }
 			uint32_t						getFontSize(void)	const { return fontSize_; }
 			uint32_t						getFlags(void)		const { return flags_; }
 			
-			Niski::Math::Vector2D<int32_t>	measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::wstring& text);
+			Niski::Math::Vector2D<int32_t>	measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::string& text);
 
 			void							render(Niski::Renderer::Renderer& renderer, 
-				const Niski::Math::Rect2D& renderRect, 	const std::wstring& text, 
+				const Niski::Math::Rect2D& renderRect, 	const std::string& text, 
 				const Niski::Utils::Color& color = Niski::Utils::Color::white) const;
 
 		private:
@@ -84,7 +84,7 @@ namespace Niski
 			//std::map<wchar_t, Glyph> glyphs_;
 			Glyph glyphs_[65536];
 			std::vector<GlyphSheet> glyphSheets_;
-			std::wstring fontFace_;
+			std::string fontFace_;
 			uint32_t fontSize_;
 			uint32_t flags_;
 			int32_t glyphSize_;
