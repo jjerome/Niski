@@ -183,8 +183,8 @@ namespace Niski
 			case SDL_BUTTON_LEFT: return Mouse_LeftButton;
 			case SDL_BUTTON_RIGHT: return Mouse_RightButton;
 			case SDL_BUTTON_MIDDLE: return Mouse_MiddleButton;
-			case SDL_BUTTON_X1: return Mouse_Side_Forward;
-			case SDL_BUTTON_X2: return Mouse_Side_Backward;
+			case SDL_BUTTON_X1: return Mouse_Side_Backward;
+			case SDL_BUTTON_X2: return Mouse_Side_Forward;
 			default: return Mouse_InvalidButton;
 			}
 		}
