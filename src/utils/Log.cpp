@@ -3,6 +3,7 @@
 
 //
 // What the fuck kind of name is this
+#include <iostream>
 #include <iomanip>
 #define _CRT_SECURE_NO_WARNINGS 1
 
@@ -83,6 +84,8 @@ void logWriter::write(const std::wstring& message, uint16_t flags)
 		}
 	}
 	mutex_.unlock();
+
+	wprintf(data.c_str());
 }
 
 std::wstring logWriter::writeLogInformation(void)

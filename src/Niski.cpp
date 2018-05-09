@@ -7,6 +7,10 @@
 #include <thread>
 #include <chrono>
 
+#include <stdio.h>
+#include <io.h>
+#include <fcntl.h>
+
 #include "SDL/SDL.h"
 
 #include "gui/RootPanel.h"
@@ -48,6 +52,14 @@ int main(int argc, const char* argv[])
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #endif
 {
+	//
+	// Thanks to https://bobobobo.wordpress.com/2009/03/01/how-to-attach-a-console-to-your-gui-app-in-c/
+	// FIXME: PURELY FOR TESTING.
+	AllocConsole();
+	AttachConsole(GetCurrentProcessId());
+	freopen("CON", "w", stdout);
+
+
 	//
 	// Set up our writable directory for configs / etc. 
 	Niski::Utils::DataDirectory::openDataDirectory(L"Pong_Game");
