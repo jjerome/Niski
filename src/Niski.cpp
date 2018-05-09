@@ -75,6 +75,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	shouldQuit quit;
 	QuitCmd quitCmd(&quit);
 	TestCmd testCmd;
+	EchoCmd echoCmd;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
@@ -109,6 +110,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	keyBinds.setBinding(Niski::Input::Key_F1, "PongGame::GameRules::Reset");
 	keyBinds.setBinding(Niski::Input::Key_F2, "PongGame::GameRules::Pause");
 	keyBinds.setBinding(Niski::Input::Mouse_Side_Forward, "Engine::Test");
+	keyBinds.setBinding(Niski::Input::Key_F3, "Engine::Echo arg1 arg2 \"arg3 arg3 arg3\" arg4");
 
 	//
 	// Initialize our GUI stuff - you only need to really initialize

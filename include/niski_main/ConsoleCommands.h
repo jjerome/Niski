@@ -3,6 +3,7 @@
 
 #include "engine/ConCommand.h"
 #include "utils/Log.h"
+#include <sstream>
 #include <iostream>
 #include <mutex>
 
@@ -32,7 +33,7 @@ public:
 	~QuitCmd(void)
 	{}
 
-	void run(void)
+	void run(const std::vector<std::string>& args)
 	{
 		quit_->setShouldQuit(true);
 	}
@@ -50,10 +51,29 @@ public:
 	~TestCmd(void)
 	{}
 
-	void run(void)
+	void run(const std::vector<std::string>& args)
 	{
 		Niski::Utils::information("Engine::Test has run!");
-		std::cout << "Engine::Test has run!" << std::endl;
+	}
+};
+
+class EchoCmd : public Niski::Engine::ConCommand
+{
+public:
+	EchoCmd(void) : Niski::Engine::ConCommand("Engine::Echo")
+	{}
+
+	void run(const std::vector<std::string>& args)
+	{
+		std::ostringstream oss;
+		oss << "Echo ran with arguments: \n";
+
+		for (std::string arg : args)
+		{
+			oss << "\t" << arg << "\n";
+		}
+
+		std::cout << oss.str() << std::endl;;
 	}
 };
 

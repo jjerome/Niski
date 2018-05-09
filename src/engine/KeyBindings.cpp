@@ -2,16 +2,24 @@
 #include "engine/ConCommand.h"
 #include "input/KeyCodeToString.h"
 #include "utils/Log.h"
+#include "utils/StringUtils.h"
 
 using namespace Niski::Engine;
 
 //
 // Function definition for BindCmd
-void BindCmd::run(void)
+void BindCmd::run(const std::vector<std::string>& args)
 {
-	if(keyBinds_)
+	if(keyBinds_ && args.size() > 1)
 	{
-		keyBinds_->setBinding(Niski::Input::Key_InvalidKey, "TODO");
+		Niski::Input::KeyCodes kc = Niski::Input::StringToKeyCode(args[0]);
+
+		if (kc != Niski::Input::KeyCodes::Key_InvalidKey)
+		{
+			//
+			// Doesn't matter if the command is BS. 
+			keyBinds_->setBinding(kc, args[1]);
+		}
 	}
 }
 
@@ -65,101 +73,138 @@ Niski::Input::InputListener::inputEventResponse KeyBindings::receiveMouseButtonE
 
 	if (event.getState() == Niski::Input::KeyState::Pressed)
 	{
-		std::string command = getBinding(event.getButton());
+		std::string bind = getBinding(event.getButton());
 
 		//
 		// TODO: Temporary?
-		if (command == "INVALID_KEY")
+		if (bind == "INVALID_KEY")
 		{
 			return pass;
 		}
 
-		ConCommand* cmd = ConCommand::getCommand(command);
+		std::vector<std::string> args;
+		Niski::Utils::String::parse(bind, args);
+
+		ConCommand* cmd = ConCommand::getCommand(args[0]);
 
 		if (cmd)
 		{
-			cmd->run();
-		}
-		else
-		{
-			return pass;
+			//
+			// Blugh kinda terrible. 
+			args.erase(args.begin());
+			cmd->run(args);
+
+			return acknowledged;
 		}
 	}
 
 	if (event.getState() == Niski::Input::KeyState::Released)
 	{
-		std::string command = getBinding(event.getButton());
+		std::string bind = getBinding(event.getButton());
 
 		//
 		// TODO: Temporary?
-		if (command == "INVALID_KEY")
+		if (bind == "INVALID_KEY")
 		{
 			return pass;
 		}
 
+		std::vector<std::string> args;
+		Niski::Utils::String::parse(bind, args);
+
+		std::string commandText = args[0];
+
 		//
 		// If the command begins with +
 		// then run the - version of the command. 
-		if (command[0] == '+')
+		// Note that commands run when the button is pressed so we ONLY
+		// care if the command is an active one.
+		if (commandText[0] == '+')
 		{
-			command[0] = '-';
+			commandText[0] = '-';
 
-			ConCommand* cmd = ConCommand::getCommand(command);
+			ConCommand* releaseCmd = ConCommand::getCommand(commandText);
 
-			if (cmd)
+			if (releaseCmd)
 			{
-				cmd->run();
+				//
+				// Blugh kinda terrible. 
+				args.erase(args.begin());
+				releaseCmd->run(args);
+
+				return acknowledged;
 			}
 		}
 	}
 
-	return acknowledged;
+	return pass;
 }
 
 Niski::Input::InputListener::inputEventResponse KeyBindings::receiveInputEvent(const Niski::Input::InputEvent& inputEvent)
 {
 	if(inputEvent.getKeyState() == Niski::Input::KeyState::Pressed)
 	{
-		std::string command = getBinding(inputEvent.getKeyCode());
+		std::string bind = getBinding(inputEvent.getKeyCode());
 
 		//
 		// TODO: Temporary?
-		if(command == "INVALID_KEY")
+		if (bind == "INVALID_KEY")
 		{
 			return pass;
 		}
 
-		ConCommand* cmd = ConCommand::getCommand(command);
+		std::vector<std::string> args;
+		Niski::Utils::String::parse(bind, args);
 
-		if(cmd)
+		ConCommand* cmd = ConCommand::getCommand(args[0]);
+
+		if (cmd)
 		{
-			cmd->run();
-		}
-		else
-		{
-			return pass;
+			//
+			// Blugh kinda terrible. 
+			args.erase(args.begin());
+			cmd->run(args);
+
+			return acknowledged;
 		}
 	}
 
 	if(inputEvent.getKeyState() == Niski::Input::KeyState::Released)
 	{
-		std::string command = getBinding(inputEvent.getKeyCode());
+		std::string bind = getBinding(inputEvent.getKeyCode());
 		
+		//
+		// TODO: Temporary?
+		if (bind == "INVALID_KEY")
+		{
+			return pass;
+		}
+
+		std::vector<std::string> args;
+		Niski::Utils::String::parse(bind, args);
+
+		std::string commandText = args[0];
+
 		//
 		// If the command begins with +
 		// then run the - version of the command. 
-		if(command[0] == '+')
+		if (commandText[0] == '+')
 		{
-			command[0] = '-';
+			commandText[0] = '-';
 
-			ConCommand* cmd = ConCommand::getCommand(command);
+			ConCommand* releaseCmd = ConCommand::getCommand(commandText);
 
-			if(cmd)
+			if (releaseCmd)
 			{
-				cmd->run();
+				//
+				// Blugh kinda terrible. 
+				args.erase(args.begin());
+				releaseCmd->run(args);
+
+				return acknowledged;
 			}
 		}
 	}
 
-	return acknowledged;
+	return pass;
 }

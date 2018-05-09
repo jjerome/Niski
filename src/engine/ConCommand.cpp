@@ -1,4 +1,5 @@
 #include "engine/ConCommand.h"
+#include "utils/Helpers.h"
 #include "utils/StringUtils.h"
 
 using namespace Niski::Engine;
@@ -55,8 +56,9 @@ const std::string& ConCommand::getName(void) const
 	return name_;
 }
 
-void ConCommand::run(void/*std::list<std::string&>& args*/)
+void ConCommand::run(const std::vector<std::string>& args)
 {
 	//
 	//
+	Niski::Utils::UnreferencedParameter(args);
 }

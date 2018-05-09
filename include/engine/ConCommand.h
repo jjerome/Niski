@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 namespace Niski
 {
@@ -33,11 +34,12 @@ namespace Niski
 			~ConCommand(void);
 
 			const std::string &	getName(void) const;
-
-			virtual void		run(void/*std::list<std::string&>& args*/);
+			const std::string & getHelp(void) const { return helpStr_; }
+			virtual void run(const std::vector<std::string>& args);
 
 		private:
 			std::string name_;
+			std::string helpStr_;
 		};
 	}
 }

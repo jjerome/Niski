@@ -7,6 +7,7 @@
 #include "input/InputListener.h"
 
 #include <string>
+#include <vector>
 #include <map>
 
 namespace Niski
@@ -32,7 +33,7 @@ namespace Niski
 			BindCmd(KeyBindings* keyBinds) : Niski::Engine::ConCommand("Engine::Bind"), keyBinds_(keyBinds)
 			{}
 
-			void run(void);
+			virtual void run(const std::vector<std::string>& args);
 
 		private:
 			KeyBindings* keyBinds_;
