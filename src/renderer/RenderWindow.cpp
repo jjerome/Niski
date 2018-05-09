@@ -12,7 +12,8 @@ RenderWindow::RenderWindow(const std::string& title, const Niski::Math::Rect2D& 
 	window_(nullptr), 
 	windowStyle_(winStyle), 
 	inputSystem_(inputSystem), 
-	hasFocus_(true)
+	hasFocus_(true),
+	hasClosed_(false)
 {
 	uint32_t flags = (winStyle == RenderWindow::hasBorder) ? 0 : SDL_WINDOW_BORDERLESS;
 
@@ -46,11 +47,6 @@ void RenderWindow::setTitle(const std::string& title)
 	title_ = title;
 }
 
-std::string RenderWindow::getTitle(void) const
-{
-	return title_;
-}
-
 void RenderWindow::setDimensions(const Niski::Math::Rect2D& dimensions)
 {
 	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot set dimensions.", __FILE__, __FUNCSIG__, __LINE__);
@@ -80,11 +76,6 @@ void RenderWindow::setDimensions(const Niski::Math::Rect2D& dimensions)
 	dimensions_ = dimensions;
 }
 
-const Niski::Math::Rect2D& RenderWindow::getDimensions(void) const
-{
-	return dimensions_;
-}
-
 void RenderWindow::setWindowStyle(RenderWindow::windowStyle winStyle)
 {
 	Niski::Utils::Assert(window_ != nullptr, "Invalid handle - cannot set window style.", __FILE__, __FUNCSIG__, __LINE__);
@@ -101,16 +92,6 @@ void RenderWindow::setWindowStyle(RenderWindow::windowStyle winStyle)
 	//
 	// Update our dimensions again (since it's adjusted for the window style)
 	setDimensions(dimensions_);
-}
-
-RenderWindow::windowStyle RenderWindow::getWindowStyle(void) const
-{
-	return windowStyle_;
-}
-
-bool RenderWindow::hasFocus(void) const
-{
-	return hasFocus_;
 }
 
 bool RenderWindow::getFocus(void)
@@ -136,11 +117,6 @@ void RenderWindow::activateWindow(void)
 	SDL_SetWindowGrab(window_, SDL_TRUE);
 }
 
-SDL_Window* RenderWindow::getWndHandle(void) const
-{
-	return window_;
-}
-
 void RenderWindow::handleWindowEvents(const SDL_Event& evt)
 {
 	switch (evt.window.event)
@@ -156,6 +132,17 @@ void RenderWindow::handleWindowEvents(const SDL_Event& evt)
 	case SDL_WINDOWEVENT_CLOSE: 
 		//
 		// TODO: 
+		hasClosed_ = true;
+		break;
+
+	case SDL_WINDOWEVENT_MOVED:
+		dimensions_.left = evt.window.data1;
+		dimensions_.top = evt.window.data2;
+		break;
+
+	case SDL_WINDOWEVENT_RESIZED:
+		dimensions_.right = evt.window.data1;
+		dimensions_.bottom = evt.window.data2;
 		break;
 
 	default:

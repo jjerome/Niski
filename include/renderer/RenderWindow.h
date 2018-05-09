@@ -38,20 +38,22 @@ namespace Niski
 			~RenderWindow(void);
 
 			void						setTitle(const std::string& title);
-			std::string					getTitle(void)									const;
+			std::string					getTitle(void)									const { return title_;  }
 
 			void						setDimensions(const Niski::Math::Rect2D& dimensions);
-			const Niski::Math::Rect2D&	getDimensions(void)								const;
+			const Niski::Math::Rect2D&	getDimensions(void)								const { return dimensions_;  }
 
 			void						setWindowStyle(RenderWindow::windowStyle winStyle);
-			RenderWindow::windowStyle	getWindowStyle(void)							const;
+			RenderWindow::windowStyle	getWindowStyle(void)							const { return windowStyle_;  }
 
-			bool						hasFocus(void)									const;
+			bool						hasFocus(void)									const { return hasFocus_;  }
+
+			bool						isClosed(void)									const { return hasClosed_;  }
 
 			bool						getFocus(void);
 			void						activateWindow(void);
 
-			SDL_Window*					getWndHandle(void)							const;
+			SDL_Window*					getWndHandle(void)							const { return window_;  }
 
 			void						handleWindowEvents(const SDL_Event& evt);
 
@@ -64,6 +66,7 @@ namespace Niski
 			RenderWindow::windowStyle	windowStyle_;
 			Niski::Input::InputSystem*  inputSystem_;
 			bool						hasFocus_;
+			bool						hasClosed_;
 		};
 
 		//
