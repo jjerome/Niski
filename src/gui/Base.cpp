@@ -296,13 +296,19 @@ void Base::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 	Niski::Utils::UnreferencedParameter(event);
 }
 
-void Base::receiveMouseInput(const Niski::Input::InputEvent& event)
+void Base::receiveMouseButtonInput(const Niski::Input::MouseBtnEvent& event)
 {
 	// todo
 	Niski::Utils::UnreferencedParameter(event);
 }
 
-void Base::receiveTextInput(std::string str)
+void Base::receiveMouseMovement(const Niski::Input::MouseEvent& event)
+{
+	// todo
+	Niski::Utils::UnreferencedParameter(event);
+}
+
+void Base::receiveTextInput(const std::string& str)
 {
 	// todo
 	Niski::Utils::UnreferencedParameter(str);

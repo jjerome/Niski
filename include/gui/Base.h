@@ -65,6 +65,14 @@ namespace Niski
 			void							performLayout(void);
 
 			const Niski::Math::Rect2D &		getBounds(void)		const;
+
+			//
+			// TODO: These functions (and their implmentations) desperately need to be looked at
+			// The functions are very misleading at the moment. There's no way to 
+			// set a position relative to the parent, size isn't limited to 
+			// the parent's size either. Plus size is a very shitty name
+			// should be height/width -- things more commonly understood in UI programming
+
 			//
 			// Sets the bounds. Note that bounds are absolute (i.e. not relative to the parent).
 			// You need to adjust 
@@ -82,8 +90,9 @@ namespace Niski
 			//
 			// Input related stuff
 			virtual void							receiveKeyboardInput(const Niski::Input::InputEvent& event);
-			virtual void							receiveMouseInput(const Niski::Input::InputEvent& event);
-			virtual void							receiveTextInput(std::string str);
+			virtual void							receiveMouseButtonInput(const Niski::Input::MouseBtnEvent& event);
+			virtual void							receiveMouseMovement(const Niski::Input::MouseEvent& event);
+			virtual void							receiveTextInput(const std::string& str);
 
 		private:
 			Base*							parent_;
