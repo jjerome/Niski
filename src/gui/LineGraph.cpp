@@ -48,9 +48,9 @@ LineGraph::LineGraph(Base* parent) : Base(parent, "LineGraph"), lineColor_(Niski
 {
 	//
 	// Initialize the fonts... 
-	title_ = new Label(this, "lineGraphTitle", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
-	axisNameX_ = new Label(this, "axisNameX", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
-	axisNameY_ = new Label(this, "axisNameY", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 12);
+	title_ = new Label(this, "lineGraphTitle", Niski::Math::Vector2D<int32_t>(0, 0), Niski::GUI::FontCfg("Arial", 12));
+	axisNameX_ = new Label(this, "axisNameX", Niski::Math::Vector2D<int32_t>(0, 0), Niski::GUI::FontCfg("Arial", 12));
+	axisNameY_ = new Label(this, "axisNameY", Niski::Math::Vector2D<int32_t>(0, 0), Niski::GUI::FontCfg("Arial", 12));
 }
 
 LineGraph::~LineGraph(void)

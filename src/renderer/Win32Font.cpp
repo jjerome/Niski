@@ -11,13 +11,14 @@ using namespace Niski::Renderer;
 // TODO: Hack
 const std::string Win32Font::ansiPreload = "?!@#$%^&*()-_=+[{]}\\|'\";:/.>,<`~ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-Win32Font::Win32Font(const std::string& fontFace, uint32_t size, uint32_t flags) 
-	: dc_(nullptr), font_(nullptr), bitmap_(nullptr), bits_(nullptr), fontFace_(fontFace), fontSize_(size), flags_(flags)
+Win32Font::Win32Font(const Niski::GUI::FontCfg& cfg)
+	: dc_(nullptr), font_(nullptr), bitmap_(nullptr), bits_(nullptr), fontFace_(cfg.fontFace), fontSize_(cfg.fontSize), flags_(cfg.fontFlags)
 {
-	int weight = (flags & Styles::Bold) ? FW_BOLD : FW_NORMAL;
-	bool italics = (flags & Styles::Italics) ? true : false;
-	bool underline = (flags & Styles::Underline) ? true : false;
-	bool strikeout = (flags & Styles::Strikeout) ? true : false;
+	int weight = (cfg.fontFlags & Niski::GUI::FontCfg::FontStyle::fontBold) ? FW_BOLD : FW_NORMAL;
+	bool italics = (cfg.fontFlags & Niski::GUI::FontCfg::FontStyle::fontItalics) ? true : false;
+	bool underline = (cfg.fontFlags & Niski::GUI::FontCfg::FontStyle::fontUnderline) ? true : false;
+	bool strikeout = (cfg.fontFlags & Niski::GUI::FontCfg::FontStyle::fontStrikeout) ? true : false;
+	int antialias = (cfg.fontFlags & Niski::GUI::FontCfg::FontStyle::fontAntiAlias) ? CLEARTYPE_QUALITY : NONANTIALIASED_QUALITY;
 
 	//
 	// initialize GDI stuff.
@@ -32,11 +33,11 @@ Win32Font::Win32Font(const std::string& fontFace, uint32_t size, uint32_t flags)
 
 	//
 	// Make the height negative because the size we get is not in device units
-	int32_t height = -(::MulDiv(size, ::GetDeviceCaps(dc_, LOGPIXELSY), 72));
+	int32_t height = -(::MulDiv(cfg.fontSize, ::GetDeviceCaps(dc_, LOGPIXELSY), 72));
 
 	font_ = ::CreateFontA(height, 0, 0, 0, weight, italics, underline, strikeout, 
-		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, 
-		DEFAULT_PITCH | FF_DONTCARE, fontFace.c_str());
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, antialias, 
+		DEFAULT_PITCH | FF_DONTCARE, cfg.fontFace.c_str());
 
 	if(font_ == nullptr)
 	{
@@ -398,7 +399,7 @@ void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::R
 	//
 	// TODO: fix support for letters that go below the line, typically. 
 	// Perhaps measure the text instead of using glyph size? 
-	size_t currentSheet = -1;
+	size_t currentSheet = glyphSheets_.size() + 1;
 	Niski::Math::Vector2D<int32_t> position(renderRect.left, renderRect.top + fontHeight_);
 	Niski::Renderer::VertexBuffer2D vBuffer;
 	IDirect3DDevice9* device = renderer.getNativeRenderer();
@@ -407,6 +408,23 @@ void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::R
 	for(wchar_t ch : text)
 	{
 		Glyph glyph = glyphs_[ch];
+
+		//
+		// If we have to change our glyph sheet then 
+		// push out the triangles we have saved up. 
+		if (currentSheet != glyph.sheetIndex)
+		{
+			vBuffer.setPrimitiveType(Niski::Renderer::VertexBuffer2D::triangleList);
+			vBuffer.render(renderer);
+
+			vBuffer.flushVertices();
+
+			device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+			device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+
+			currentSheet = glyph.sheetIndex;
+			glyphSheets_[currentSheet].texture->render(renderer);
+		}
 
 		//
 		// Check if we have room for this character
@@ -460,23 +478,7 @@ void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::R
 			glyphRect.left = position.x;
 			glyphRect.right = rect.right;
 
-			vBuffer.pushTexturedRectangle(glyphRect, rect.left / 256.0f, rect.top / 256.0f, (rect.left + rect.right) / 256.0f, (rect.top + rect.bottom) / 256.0f);
-
-			{
-				device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-				device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-
-				if(currentSheet != glyph.sheetIndex)
-				{
-					currentSheet = glyph.sheetIndex;
-					glyphSheets_[currentSheet].texture->render(renderer);
-				}
-
-				vBuffer.setPrimitiveType(Niski::Renderer::VertexBuffer2D::triangleList);
-				vBuffer.render(renderer);
-			}
-
-			vBuffer.flushVertices();
+			vBuffer.pushTexturedRectangle(glyphRect, rect.left / 256.0f, rect.top / 256.0f, (rect.left + rect.right) / 256.0f, (rect.top + rect.bottom) / 256.0f);			
 		}
 
 		//
@@ -487,6 +489,11 @@ void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::R
 			position.x += glyph.width;
 		}
 	}
+
+	vBuffer.setPrimitiveType(Niski::Renderer::VertexBuffer2D::triangleList);
+	vBuffer.render(renderer);
+
+	vBuffer.flushVertices();
 
 	//
 	// Set the texture to nullptr for other things to render..

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "gui/FontCfg.h"
 #include "math/Math.h"
 #include "math/Rectangle.h"
 #include "renderer/Renderer.h"
@@ -56,7 +57,7 @@ namespace Niski
 			};
 
 		public:
-			Win32Font(const std::string& fontFace, uint32_t size, uint32_t flags);
+			Win32Font(const Niski::GUI::FontCfg& cfg);
 			~Win32Font(void);
 
 			bool							preloadGlyphs(const std::string& glyphs, Niski::Renderer::Renderer& renderer);
@@ -64,6 +65,10 @@ namespace Niski
 			std::string					getFontFace(void)	const { return fontFace_; }
 			uint32_t						getFontSize(void)	const { return fontSize_; }
 			uint32_t						getFlags(void)		const { return flags_; }
+			//
+			// Returns the recommended height in pixels for this font. 
+			// This is the tallest character height + any extra space the font desires around itself.
+			uint32_t						getFontHeight(void) const { return fontHeight_;  }
 			
 			Niski::Math::Vector2D<int32_t>	measureText(const Niski::Math::Vector2D<int32_t>& maxSize, const std::string& text);
 

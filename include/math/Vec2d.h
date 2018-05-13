@@ -2,6 +2,7 @@
 #define __MATH_VEC2D_H__
 
 #include <cmath>
+#include <stdint.h>
 
 namespace Niski
 {
@@ -131,6 +132,8 @@ namespace Niski
 		{
 			return ::sqrt(x * x + y * y);
 		}
+
+		typedef Vector2D<int32_t> Point;
 	}
 }
 

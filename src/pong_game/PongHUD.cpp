@@ -5,17 +5,17 @@ using namespace Niski::Pong_Game;
 
 PongHUD::PongHUD(Niski::GUI::RootPanel* rootPanel, PongPlayer* pongPlayer, PongPlayer* pongOpponent) : Niski::GUI::Base(rootPanel, "PongHUD"), player_(pongPlayer), opponent_(pongOpponent)
 {
-	playerScore_ = new Niski::GUI::Label(this, "PongHUD::PlayerScore", Niski::Math::Vector2D<int32_t>(0, 0), "Impact", 14);
+	playerScore_ = new Niski::GUI::Label(this, "PongHUD::PlayerScore", Niski::Math::Vector2D<int32_t>(0, 0), Niski::GUI::FontCfg("Impact", 14));
 	playerScore_->setText("Score: 0");
 	playerScore_->setSize(Niski::Math::Vector2D<int32_t>(200, 100));
 	playerScore_->setColor(Niski::Utils::Color(Niski::Utils::Color::white));
 
-	opponentScore_ = new Niski::GUI::Label(this, "PongHUD::OpponentScore", Niski::Math::Vector2D<int32_t>(rootPanel->getSize().x - 100, 0), "Impact", 14);
+	opponentScore_ = new Niski::GUI::Label(this, "PongHUD::OpponentScore", Niski::Math::Vector2D<int32_t>(rootPanel->getSize().x - 100, 0), Niski::GUI::FontCfg("Impact", 14));
 	opponentScore_->setText("Score: 0");
 	opponentScore_->setSize(Niski::Math::Vector2D<int32_t>(200, 100));
 	opponentScore_->setColor(Niski::Utils::Color(Niski::Utils::Color::white));
 
-	title_ = new Niski::GUI::Label(this, "PongHUD::TitleLabel", Niski::Math::Vector2D<int32_t>((rootPanel->getSize().x / 2) - 200, 0), "Impact", 32);
+	title_ = new Niski::GUI::Label(this, "PongHUD::TitleLabel", Niski::Math::Vector2D<int32_t>((rootPanel->getSize().x / 2) - 200, 0), Niski::GUI::FontCfg("Impact", 32));
 	title_->setText("Pong Game 2014");
 	title_->setSize(Niski::Math::Vector2D<int32_t>(400, 100));
 	title_->setColor(Niski::Utils::Color(Niski::Utils::Color::white));

@@ -1,5 +1,7 @@
-#ifndef __GUI_LABEL_H__
-#define __GUI_LABEL_H__
+#ifndef __GUI_RICHTEXT_H__
+#define __GUI_RICHTEXT_H__
+
+#include <stack>
 
 #include "gui/Base.h"
 #include "utils/Color.h"
@@ -9,20 +11,32 @@ namespace Niski
 {
 	namespace GUI
 	{
-		class Label : public Base
+		struct RichTextLine
+		{
+		public:
+			RichTextLine(std::string aStr, Niski::Utils::Color aCol) : str(aStr), col(aCol)
+			{}
+
+			std::string str;
+			Niski::Utils::Color col;
+		};
+
+		class RichText : public Base
 		{
 		public:
 			//
 			// TODO: no flag support.
-			Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, 
+			RichText(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position,
 				const FontCfg& fontCfg);
-			~Label(void);
+			~RichText(void);
 
 			void						precache(Niski::Renderer::Renderer& renderer);
 			void						render(Niski::Renderer::Renderer& renderer) const;
-			
+
 			void						setText(const std::string& text);
-			const std::string &		getText(void) const;
+			
+
+			void						addLine(const std::string& text);
 
 			void						setColor(const Niski::Utils::Color& color);
 			const Niski::Utils::Color &	getColor(void) const;
@@ -36,10 +50,8 @@ namespace Niski
 			bool						isItalics(void) const { return (styleFlags_ & FontCfg::fontItalics) ? true : false; }
 			bool						isUnderline(void) const { return (styleFlags_ & FontCfg::fontUnderline) ? true : false; }
 
-			void						sizeToContents(void);
-
 		private:
-			std::string					text_;
+			std::vector<RichTextLine>	textLines_;
 			bool						needsToPreload_;
 			Niski::Renderer::Win32Font*	font_;
 			Niski::Utils::Color			color_;

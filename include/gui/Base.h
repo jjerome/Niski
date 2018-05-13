@@ -84,6 +84,9 @@ namespace Niski
 			const Niski::Math::Vector2D<int32_t>	getSize(void)		const;
 			void									setSize(const Niski::Math::Vector2D<int32_t>& size);
 
+			int32_t									getHeight(void) const { return bounds_.bottom; }
+			int32_t									getWidth(void) const { return bounds_.right;  }
+
 			virtual void							precache(Niski::Renderer::Renderer& renderer);
 			virtual void							render(Niski::Renderer::Renderer& renderer) const;
 

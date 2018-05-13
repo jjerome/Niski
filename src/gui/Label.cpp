@@ -3,13 +3,14 @@
 
 using namespace Niski::GUI;
 
-Label::Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, const std::string& fontFace, int16_t size) 
+Label::Label(Base* parent, const std::string& name, const Niski::Math::Vector2D<int32_t>& position, const FontCfg& fontCfg)
 	: Base(parent, name), needsToPreload_(true), color_(Niski::Utils::Color::white)
 {
 	//
 	// TODO: Should retrieve a font from our rootPanel parent
 	// which will create it for us if needbe.
-	font_ = new Niski::Renderer::Win32Font(fontFace, size, 0);
+
+	font_ = new Niski::Renderer::Win32Font(fontCfg);
 	Niski::Utils::Assert(font_ != nullptr, "Failed to create a font for our label.", __FILE__, __FUNCSIG__, __LINE__);
 
 	setPosition(position);

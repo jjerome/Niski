@@ -24,7 +24,7 @@ using namespace Niski::GUI;
 
 TitleBar::TitleBar(Base* parent, const std::string& title) : Base(parent, "TitleBar")
 {
-	label_ = new Label(this, "titleBarLabel", Niski::Math::Vector2D<int32_t>(0, 0), "Arial", 14);
+	label_ = new Label(this, "titleBarLabel", Niski::Math::Vector2D<int32_t>(0, 0), FontCfg("Arial", 14));
 	label_->setText(title);
 }
 

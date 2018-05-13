@@ -15,6 +15,7 @@
 
 #include "SDL/SDL.h"
 
+#include "gui/Console.h"
 #include "gui/RootPanel.h"
 #include "gui/TextInput.h"
 #include "input/InputSystem.h"
@@ -54,12 +55,14 @@ int main(int argc, const char* argv[])
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #endif
 {
+#ifdef _WIN32
 	//
 	// Thanks to https://bobobobo.wordpress.com/2009/03/01/how-to-attach-a-console-to-your-gui-app-in-c/
 	// FIXME: PURELY FOR TESTING.
 	AllocConsole();
 	AttachConsole(GetCurrentProcessId());
 	freopen("CON", "w", stdout);
+#endif
 
 
 	//
@@ -121,6 +124,12 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	rootPanel.setBounds(Niski::Math::Rect2D(0, 0, 720, 1280));
 	rootPanel.setPadding(Niski::Math::Rect2D(10, 10, 10, 10));
 
+	Niski::GUI::Console devConsole(&rootPanel);
+	devConsole.addLine("Hello world!", Niski::Utils::Color::red);
+	devConsole.addLine("Hello world!", Niski::Utils::Color::white);
+	devConsole.addLine("Hello world!", Niski::Utils::Color::black);
+	devConsole.addLine("Hello world!", Niski::Utils::Color::green);
+
 	//
 	// Initialize game entities.
 	gameRules.createGameWorld(Niski::Math::Rect2D(0, 0, 720, 1280));
@@ -130,7 +139,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	Niski::Pong_Game::PongHUD pongHUD(&rootPanel, bot, bot2);
 
-	Niski::GUI::TextInput textInput(&rootPanel, "textinputthing", Niski::Math::Vector2D<int32_t>(720 / 2, 1280 / 2));
+	Niski::GUI::TextInput textInput(&rootPanel, "textinputthing", Niski::Math::Vector2D<int32_t>(720 / 2, 1280 / 2), Niski::GUI::FontCfg("Arial", 12));
 
 	inputSystem.addInputListener(&rootPanel);
 	inputSystem.addMouseListener(&rootPanel);

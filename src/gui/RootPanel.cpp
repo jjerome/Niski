@@ -7,7 +7,7 @@ using namespace Niski::GUI;
 
 RootPanel::RootPanel(void) : Base(nullptr, "RootPanel"), mousePosition_(0, 0), isActive_(true)
 {
-	mousePositionLbl_ = new Label(this, "MousePositionLabel", Niski::Math::Vector2D<int32_t>(400, 0), "Consolas", 8);
+	mousePositionLbl_ = new Label(this, "MousePositionLabel", Niski::Math::Vector2D<int32_t>(400, 0), Niski::GUI::FontCfg("Consolas", 8));
 	mousePositionLbl_->setSize(Niski::Math::Vector2D<int32_t>(400, 50));
 }
 
