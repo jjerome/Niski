@@ -22,6 +22,8 @@ namespace Niski
 
 			virtual void render(Niski::Renderer::Renderer& renderer) const;
 
+
+
 			// 
 			// Input
 			virtual void receiveKeyboardInput(const Niski::Input::InputEvent& event);

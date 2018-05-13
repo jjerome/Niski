@@ -73,6 +73,7 @@ Win32Font::Win32Font(const Niski::GUI::FontCfg& cfg)
 	}
 
 	fontHeight_ = tm.tmHeight + tm.tmExternalLeading + 1;
+
 	ascent_ = tm.tmAscent;
 
 	//

@@ -143,7 +143,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 
 	//
 	// Make sure our x position never goes out of bounds. 
-	Niski::Math::clamp<uint32_t>(cursorPos_.x, 0, str.length() + 1);
+	Niski::Math::clamp<uint32_t>(cursorPos_.x, 0, str.length());
 
 	label_->setText(str);
 }

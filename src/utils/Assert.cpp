@@ -17,7 +17,14 @@ Assert::AssertCallBack Assert::getAssertCallBack(void)
 
 Assert::Assert(bool assertion, const std::string& errorMessage, const std::string& fileName, const std::string& functionName, int32_t line)
 {
+	static bool isIgnoring = false;
+
 	if(assertion)
+	{
+		return;
+	}
+
+	if (isIgnoring)
 	{
 		return;
 	}
@@ -48,6 +55,7 @@ Assert::Assert(bool assertion, const std::string& errorMessage, const std::strin
 	case ignoreAll:
 		//
 		// TODO: 
+		isIgnoring = true;
 		Niski::Utils::information("User is ignoring all asserts");
 		break;
 
