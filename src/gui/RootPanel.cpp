@@ -7,7 +7,7 @@ using namespace Niski::GUI;
 
 RootPanel::RootPanel(void) : Base(nullptr, "RootPanel"), mousePosition_(0, 0), isActive_(true)
 {
-	mousePositionLbl_ = new Label(this, "MousePositionLabel", Niski::Math::Vector2D<int32_t>(400, 0), Niski::GUI::FontCfg("Consolas", 8));
+	mousePositionLbl_ = new Label(this, "MousePositionLabel", Niski::Math::Vector2D<int32_t>(1100, 680), Niski::GUI::FontCfg("Consolas", 8));
 	mousePositionLbl_->setSize(Niski::Math::Vector2D<int32_t>(400, 50));
 }
 
@@ -20,11 +20,23 @@ Niski::Input::MouseListener::mouseEventResponse RootPanel::receiveMouseEvent(con
 	{
 		return MouseListener::pass;
 	}
+
+	std::ostringstream ctrlStr;
+
+	if (!activeControl_)
+	{
+		ctrlStr << "Current Control: null";
+	}
+	else
+	{
+		ctrlStr << "Current Control: " << activeControl_->getName();
+	}
 	
 	mousePosition_ = event.getPosition();
 
 	std::ostringstream woss;
-	woss << "Mouse Pos: " << mousePosition_.x << ", " << mousePosition_.y;
+	woss << "Mouse Pos: " << mousePosition_.x << ", " << mousePosition_.y << "\n"
+		<< ctrlStr.str();
 
 	mousePositionLbl_->setText(woss.str());
 
@@ -46,20 +58,18 @@ Niski::Input::InputListener::inputEventResponse RootPanel::receiveMouseButtonEve
 	// check if we have a new active control. 
 	if (event.getButton() == Niski::Input::KeyCodes::Mouse_LeftButton && event.getState() == Niski::Input::KeyState::Pressed)
 	{
-		std::cout << "Attempting to set a new activeControl_ . . . ";
-
 		auto child = getChildAtPosition(mousePosition_);
 
 		if (child != nullptr)
 		{
-			std::cout << "Succeeded" << std::endl;
+			std::cout << "Found child [" << child->getName() << "] at position (" << mousePosition_.x << "," << mousePosition_.y << ")" << std::endl;
 			activeControl_ = child;
 
 			return InputListener::acknowledged;
 		}
 		else
 		{
-			std::cout << "Failed" << std::endl;
+			std::cout << "Unable to find a GUI child at position (" << mousePosition_.x << "," << mousePosition_.y << ")" << std::endl;
 			activeControl_ = nullptr;
 		}
 	}

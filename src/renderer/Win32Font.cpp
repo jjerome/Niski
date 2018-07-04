@@ -489,6 +489,16 @@ void Win32Font::render(Niski::Renderer::Renderer& renderer, const Niski::Math::R
 		{
 			position.x += glyph.width;
 		}
+
+		//
+		// Flush the vertex buffer if we are dangerously close to 
+		if (vBuffer.numVertices() >= (Niski::Renderer::VertexBuffer2D::maxVerts - 6))
+		{
+			vBuffer.setPrimitiveType(Niski::Renderer::VertexBuffer2D::triangleList);
+			vBuffer.render(renderer);
+
+			vBuffer.flushVertices();
+		}
 	}
 
 	vBuffer.setPrimitiveType(Niski::Renderer::VertexBuffer2D::triangleList);

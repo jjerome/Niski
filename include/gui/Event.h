@@ -4,9 +4,16 @@ namespace Niski
 	{
 		class Event
 		{
+			enum class eventType {
+				GainedFocus,
+				LostFocus,
+
+			};
 		public:
-			Event();
+			Event(eventType evtType);
 			~Event();
+
+			eventType getEventType() const;
 
 		private:
 

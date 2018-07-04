@@ -19,8 +19,6 @@
 #	include <windows.h>
 #endif
 
-static const int32_t maxVerts = 256;
-
 namespace Niski
 {
 	namespace Renderer
@@ -48,6 +46,7 @@ namespace Niski
 			
 		public:
 			static const int32_t FVF;
+			static const int32_t maxVerts = 256;
 
 		public:
 			VertexBuffer2D(void);

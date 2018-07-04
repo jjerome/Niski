@@ -31,11 +31,11 @@ Console::Console(Niski::GUI::Base* parent) : Base(parent, "Console")
 	auto parentSize = getParent()->getSize();
 	int32_t height = parentSize.y * 0.30; // Console should only overlay around 30% of the screen, roughly. 
 
-	commandInput_ = new ConsoleTextInput(this, "ConsoleInputField", Niski::Math::Vector2D<int32_t>(0, height-15), FontCfg("Consolas", 12));
+	commandInput_ = new ConsoleTextInput(this, "ConsoleInputField", Niski::Math::Vector2D<int32_t>(0, height-20), FontCfg("Consolas", 12));
 	consoleText_ = new RichText(this, "ConsoleTextDisplay", Niski::Math::Vector2D<int32_t>(0, 0), FontCfg("Consolas", 12));
 
 	commandInput_->setSize(Niski::Math::Point(parentSize.x, 15));
-	consoleText_->setSize(Niski::Math::Point(parentSize.x, height-15));
+	consoleText_->setSize(Niski::Math::Point(parentSize.x, height-20));
 
 	setSize(Niski::Math::Point(parentSize.x, height));
 }

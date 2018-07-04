@@ -139,7 +139,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 	Niski::Pong_Game::PongHUD pongHUD(&rootPanel, bot, bot2);
 
-	Niski::GUI::TextInput textInput(&rootPanel, "textinputthing", Niski::Math::Vector2D<int32_t>(720 / 2, 1280 / 2), Niski::GUI::FontCfg("Arial", 12));
+	Niski::GUI::TextInput textInput(&rootPanel, "textInputTest", Niski::Math::Vector2D<int32_t>(720 / 2, 1280 / 2), Niski::GUI::FontCfg("Arial", 12));
 
 	inputSystem.addInputListener(&rootPanel);
 	inputSystem.addMouseListener(&rootPanel);

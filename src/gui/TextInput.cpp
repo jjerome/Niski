@@ -14,7 +14,7 @@ TextInput::TextInput(Niski::GUI::Base* parent, const std::string& name, const Ni
 	// TODO: This likely won't make it, but we're not going to
 	// update the cursor position because this text is supposed 
 	// to go away on focus (yet to be implemented) 
-	label_->setText("> ");
+	label_->setText("");
 	//
 	// TODO: This is nonsense. 
 	label_->setBounds(Niski::Math::Rect2D(position.y, position.x, 500, 150));
@@ -40,9 +40,8 @@ void TextInput::render(Niski::Renderer::Renderer& renderer) const
 	Niski::Renderer::VertexBuffer2D vBuffer;
 	
 	//
-	// Baby blue backdrop. Yeah I hate how this
-	// is currently done. The entire vBuffer system 
-	// needs to be ripped out.
+	// Yeah I hate how this is currently done. 
+	// The entire vBuffer system needs to be ripped out.
 	vBuffer.setColor(Niski::Utils::Color::white);
 	outerRect.top = renderRect.top - 2;
 	outerRect.bottom = renderRect.bottom + 2;
@@ -85,7 +84,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 	case Niski::Input::KeyCodes::Key_Right:
 		//
 		// Still room for us to go left. 
-		if (cursorPos_.x < str.length() + 1)
+		if (cursorPos_.x < str.length())
 		{
 			++cursorPos_.x;
 		}
@@ -106,7 +105,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 		break;
 		
 	case Niski::Input::KeyCodes::Key_End:
-		cursorPos_.x = str.length() + 1;
+		cursorPos_.x = str.length();
 		break;
 
 	case Niski::Input::KeyCodes::Key_Enter:
@@ -126,7 +125,7 @@ void TextInput::receiveKeyboardInput(const Niski::Input::InputEvent& event)
 		break;
 
 	case Niski::Input::KeyCodes::Key_Delete:
-		if (!str.empty() && cursorPos_.x != str.length() + 1)
+		if (!str.empty() && cursorPos_.x != str.length())
 		{
 			str.erase(cursorPos_.x, 1);
 		}
